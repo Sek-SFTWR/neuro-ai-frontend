@@ -6,7 +6,7 @@ export const shell = {
   'shell.nav.evaluate': { ja: '評価', en: 'Evaluate' },
   'shell.nav.history': { ja: '実行履歴', en: 'History' },
   'shell.nav.personas': { ja: 'ペルソナ管理', en: 'Personas' },
-  'shell.nav.axes': { ja: '評価軸設定', en: 'Axes settings' },
+  'shell.nav.settings': { ja: '設定', en: 'Settings' },
   'shell.nav.help': { ja: 'ヘルプ', en: 'Help' },
   'shell.nav.logout': { ja: 'ログアウト', en: 'Log out' },
   'shell.nav.helpComingSoon': { ja: 'ヘルプセンターは準備中です', en: 'The help center is coming soon.' },

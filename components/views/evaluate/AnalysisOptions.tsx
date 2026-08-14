@@ -4,15 +4,8 @@ import { Icon } from '@/components/Icon';
 import { Button } from '@/components/ui/Button';
 import { Segmented, type SegmentedItem } from '@/components/ui/Segmented';
 import { useStore } from '@/lib/store';
-import { MODEL_ORDER, MODELS, SPLICE_ORDER, spliceLabel } from '@/lib/palette';
-import type { ModelKey, SpliceSec } from '@/lib/types';
-
-const MODEL_ITEMS: SegmentedItem<ModelKey>[] = MODEL_ORDER.map((k) => ({
-  key: k,
-  label: MODELS[k].label,
-  icon: MODELS[k].icon,
-  note: MODELS[k].note,
-}));
+import { SPLICE_ORDER, spliceLabel } from '@/lib/palette';
+import type { SpliceSec } from '@/lib/types';
 
 /* SpliceSec is a union of number literals, so the radiogroup keys are their
    string forms and are mapped back on the way out. */
@@ -22,22 +15,16 @@ const SPLICE_ITEMS: SegmentedItem<string>[] = SPLICE_ORDER.map((s) => ({
 }));
 
 /**
- * The two run-shaping settings: which engine analyses the video, and how
- * finely it is sliced. Both belong to the run rather than to any one input
- * mode, so they sit between the video inputs and the persona picker in the
- * evaluation modal — after "what am I evaluating", before "who is watching".
+ * How finely the video is sliced for this run. The model picker used to sit
+ * beside it, but which engine analyses the video is a standing preference
+ * rather than a per-run decision — it lives on the settings screen now, and
+ * every run reads the same state.model from there.
  */
 export function AnalysisOptions({ onOpenCriteria }: { onOpenCriteria: () => void }) {
   const { state, patch } = useStore();
 
   return (
     <div className="flex flex-wrap items-start gap-x-8 gap-y-4">
-      <Segmented
-        label="解析モデル"
-        items={MODEL_ITEMS}
-        value={state.model}
-        onChange={(k) => patch({ model: k })}
-      />
       <Segmented
         label="解析間隔（スプライス）"
         items={SPLICE_ITEMS}

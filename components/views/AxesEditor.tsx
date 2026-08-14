@@ -4,8 +4,6 @@ import { useRef, useState } from 'react';
 import { Icon } from '@/components/Icon';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
-import { PageHeader } from '@/components/ui/PageHeader';
-import { Panel } from '@/components/ui/Panel';
 import { useStore } from '@/lib/store';
 import { useToast } from '@/components/overlays/Toast';
 import { PRESET_AXES } from '@/lib/palette';
@@ -146,17 +144,4 @@ export function AxesEditor() {
   );
 
   return body;
-}
-
-export function AxesView() {
-  const { state } = useStore();
-  return (
-    <div className="screen flex flex-col gap-6">
-      <PageHeader
-        title="評価軸設定"
-        sub="総合評価のレーダーチャートで使う評価軸です。ここで設定した軸が、すべての動画評価に共通で適用されます。"
-      />
-      <Panel title={`現在の評価軸（${state.axes.length}件）`} body={<AxesEditor />} shot={false} />
-    </div>
-  );
 }

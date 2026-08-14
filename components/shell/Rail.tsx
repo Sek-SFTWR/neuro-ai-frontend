@@ -1,6 +1,5 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
 import { Icon, type IconName } from '@/components/Icon';
 import { useStore } from '@/lib/store';
 import { useActions } from '@/lib/actions';
@@ -12,7 +11,6 @@ const SECTIONS: { key: SectionKey; labelKey: string; icon: IconName }[] = [
   { key: 'evaluate', labelKey: 'shell.nav.evaluate', icon: 'play' },
   { key: 'history', labelKey: 'shell.nav.history', icon: 'clock' },
   { key: 'personas', labelKey: 'shell.nav.personas', icon: 'users' },
-  { key: 'axes', labelKey: 'shell.nav.axes', icon: 'sliders' },
 ];
 
 /** `bottom` parks the group at the far end of the rail — the right end of the
@@ -68,25 +66,10 @@ function RailItem({
  * Below 860px the capsules turn on their side and scroll horizontally.
  */
 export function Rail() {
-  const { state, patch } = useStore();
+  const { state } = useStore();
   const { goSection } = useActions();
   const toast = useToast();
   const t = useT();
-  const router = useRouter();
-
-  /* The store holds only mock data, so there is nothing to clear on the client
-     — dropping the cookie is the whole of signing out. router.refresh() makes
-     middleware re-evaluate and bounce us to /login. */
-  async function logout() {
-    try {
-      await fetch('/api/auth/logout', { method: 'POST' });
-    } catch {
-      /* the cookie may already be gone; the redirect below settles it either way */
-    }
-    toast.show(t('shell.nav.loggedOut'));
-    router.replace('/login');
-    router.refresh();
-  }
 
   return (
     <nav
@@ -99,17 +82,9 @@ export function Rail() {
          viewport and no further, so it never adds page scroll of its own. */
       className="w-full b860:w-(--rail-w) shrink-0 flex flex-row b860:flex-col items-center b860:items-stretch gap-2 b860:gap-5 pb-2 b860:pb-6 static b860:sticky b860:top-[calc(var(--topbar-h)+8px)] b860:h-[calc(100dvh-var(--topbar-h)-var(--header-gap))] overflow-x-auto b860:overflow-visible no-scrollbar z-[200]"
     >
-      <RailGroup>
-        <RailItem
-          label={t('shell.nav.lightTheme')} icon="sun" variant="theme" active={state.theme === 'light'}
-          onClick={() => patch({ theme: 'light' })}
-        />
-        <RailItem
-          label={t('shell.nav.darkTheme')} icon="moon" variant="theme" active={state.theme === 'dark'}
-          onClick={() => patch({ theme: 'dark' })}
-        />
-      </RailGroup>
-
+      {/* Theme and logout used to bookend this rail. They are preferences and
+          account actions, not destinations, so they live on the settings
+          screen now — the rail is purely "where am I". */}
       <RailGroup>
         {SECTIONS.map((s) => (
           <RailItem key={s.key} label={t(s.labelKey)} icon={s.icon} variant="section" active={state.section === s.key} onClick={() => goSection(s.key)} />
@@ -118,7 +93,6 @@ export function Rail() {
 
       <RailGroup bottom>
         <RailItem label={t('shell.nav.help')} icon="help" onClick={() => toast.show(t('shell.nav.helpComingSoon'))} />
-        <RailItem label={t('shell.nav.logout')} icon="logout" onClick={logout} />
       </RailGroup>
     </nav>
   );

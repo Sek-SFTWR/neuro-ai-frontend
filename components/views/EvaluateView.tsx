@@ -4,7 +4,7 @@ import { Icon } from '@/components/Icon';
 import { Empty } from '@/components/ui/Empty';
 import { Button } from '@/components/ui/Button';
 import { PageHeader } from '@/components/ui/PageHeader';
-import { AxesEditor } from '@/components/views/AxesView';
+import { AxesEditor } from '@/components/views/AxesEditor';
 import { ModePicker } from '@/components/views/evaluate/ModePicker';
 import { SettingsBody } from '@/components/views/evaluate/SettingsBody';
 import { RunBar } from '@/components/views/evaluate/RunBar';

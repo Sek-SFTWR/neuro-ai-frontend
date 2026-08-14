@@ -8,7 +8,7 @@ import { useKeyChanged } from '@/lib/useKeyChanged';
 import { EvaluateView } from '@/components/views/EvaluateView';
 import { HistoryView } from '@/components/views/HistoryView';
 import { PersonasView } from '@/components/views/PersonasView';
-import { AxesView } from '@/components/views/AxesView';
+import { SettingsView } from '@/components/views/SettingsView';
 
 export function Shell() {
   const { state } = useStore();
@@ -36,7 +36,7 @@ export function Shell() {
     case 'evaluate': view = <EvaluateView />; break;
     case 'history': view = <HistoryView />; break;
     case 'personas': view = <PersonasView />; break;
-    case 'axes': view = <AxesView />; break;
+    case 'settings': view = <SettingsView />; break;
     default: view = null;
   }
 

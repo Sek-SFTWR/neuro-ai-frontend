@@ -1,53 +1,22 @@
 'use client';
 
-import { useState } from 'react';
 import { Icon, Logo } from '@/components/Icon';
-import { Avatar } from '@/components/ui/Avatar';
-import { PersonaSearchPopover } from '@/components/overlays/PersonaSearchPopover';
 import { useStore } from '@/lib/store';
 import { useActions } from '@/lib/actions';
-import { useT, type Locale } from '@/lib/i18n';
-
-/** Same segmented-pill recipe as the grid/list view toggles elsewhere in the
-    app (Personas, History) — a two-way switch reads as one control family
-    regardless of what it's switching. */
-function LocaleSwitch() {
-  const { state, patch } = useStore();
-  const t = useT();
-  const options: { key: Locale; label: string }[] = [
-    { key: 'ja', label: 'JA' },
-    { key: 'en', label: 'EN' },
-  ];
-  return (
-    <div className="h-(--ctl-h) hidden md:inline-flex items-center gap-0.5 bg-surface rounded-full p-(--ctl-pad) shadow-card shrink-0" aria-label={t('shell.language')}>
-      {options.map((o) => (
-        <button
-          key={o.key}
-          type="button"
-          aria-pressed={state.locale === o.key}
-          onClick={() => patch({ locale: o.key })}
-          className={`h-(--ctl-item) px-2.5 rounded-full text-[11px] font-semibold transition-colors duration-180 ${
-            state.locale === o.key ? 'bg-fill text-text' : 'text-text-mute hover:text-text'
-          }`}
-        >
-          {o.label}
-        </button>
-      ))}
-    </div>
-  );
-}
+import { useT } from '@/lib/i18n';
 
 /**
- * The top bar carries no menu — all navigation lives in the left rail. Only
- * the brand (which returns home) and the account actions live here.
+ * The top bar carries no menu — all navigation lives in the left rail. What
+ * used to sit on the right (a persona summary, a persona search, an account
+ * chip, a JA/EN switch) was four controls competing for the same corner, three
+ * of which were status rather than action. They are gone or moved to the
+ * settings screen; the corner now holds the one thing that opens it.
  */
 export function TopBar() {
   const { state } = useStore();
   const { goSection } = useActions();
   const t = useT();
-  const first = state.personas.slice(0, 4);
-  const rest = Math.max(0, state.personas.length - first.length);
-  const [searchAnchor, setSearchAnchor] = useState<HTMLElement | null>(null);
+  const onSettings = state.section === 'settings';
 
   return (
     <header className="h-(--topbar-h) flex items-center gap-4 sticky top-0 z-[300] bg-page">
@@ -65,37 +34,21 @@ export function TopBar() {
         </span>
       </a>
 
-      <div className="flex items-center gap-2 shrink-0 ml-auto relative">
-        <div className="h-(--ctl-h) hidden lg:flex items-center gap-2 bg-surface rounded-full py-(--ctl-pad) pl-(--ctl-pad) pr-3 shadow-card">
-          <span className="flex items-center [&>*+*]:-ml-2">
-            {first.map((p) => (
-              <Avatar key={p.id} persona={p} size="xs" ring />
-            ))}
-          </span>
-          <span className="text-xs font-medium text-text-sub whitespace-nowrap inline-flex items-center gap-0.5">
-            +{rest} <Icon name="chevronDown" size={11} />
-          </span>
-        </div>
-
-        <LocaleSwitch />
-
+      <div className="flex items-center gap-2 shrink-0 ml-auto">
+        {/* aria-current rather than aria-pressed: this navigates to a screen,
+            it does not toggle a setting on. */}
         <button
           type="button"
-          aria-label={t('shell.searchPersonas')}
-          aria-expanded={!!searchAnchor}
-          onClick={(e) => setSearchAnchor(searchAnchor ? null : e.currentTarget)}
-          className={`w-(--ctl-h) h-(--ctl-h) rounded-full shadow-card flex items-center justify-center relative text-text-sub transition-[background-color,transform] duration-180 hover:scale-[1.06] active:scale-[0.96] ${
-            searchAnchor ? 'bg-fill' : 'bg-surface hover:bg-surface-hover'
+          aria-label={t('shell.nav.settings')}
+          title={t('shell.nav.settings')}
+          aria-current={onSettings ? 'page' : undefined}
+          onClick={() => goSection('settings')}
+          className={`w-(--ctl-h) h-(--ctl-h) rounded-full shadow-card flex items-center justify-center transition-[background-color,color,transform] duration-180 hover:scale-[1.06] active:scale-[0.96] ${
+            onSettings ? 'bg-black-ms text-white' : 'bg-surface text-text-sub hover:bg-surface-hover hover:text-text'
           }`}
         >
-          <Icon name="search" size={17} />
+          <Icon name="sliders" size={17} />
         </button>
-        {searchAnchor && <PersonaSearchPopover anchor={searchAnchor} onClose={() => setSearchAnchor(null)} />}
-
-        <div className="h-(--ctl-h) flex items-center gap-1.5 bg-surface rounded-full py-(--ctl-pad) pl-(--ctl-pad) pr-2.5 shadow-card cursor-pointer text-text-mute transition-colors duration-180 hover:bg-surface-hover">
-          <span className="w-(--ctl-item) h-(--ctl-item) rounded-full flex items-center justify-center text-white font-semibold text-[11px] bg-text-sub">ミ</span>
-          <Icon name="chevronDown" size={13} />
-        </div>
       </div>
     </header>
   );

@@ -12,7 +12,7 @@ export type ModelKey = 'neuroai' | 'gemini';
 /** Seconds between analysis samples — the "splice" the run is cut into. */
 export type SpliceSec = 0.25 | 0.5 | 0.75 | 1;
 
-export type SectionKey = 'evaluate' | 'history' | 'personas' | 'axes';
+export type SectionKey = 'evaluate' | 'history' | 'personas' | 'settings';
 
 export type ResultTab = 'strategy' | 'timeline' | 'overall' | 'posneg' | 'playback';
 export type CompareTab = 'summary' | ResultTab;
