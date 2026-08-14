@@ -14,13 +14,19 @@ const ERROR_KEY: Record<string, string> = {
   server_misconfigured: 'login.misconfigured',
 };
 
-export function LoginForm({ next }: { next?: string }) {
+export function LoginForm({ next, expired }: { next?: string; expired?: boolean }) {
   const t = useT();
   const router = useRouter();
   const [password, setPassword] = useState('');
   const [reveal, setReveal] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+
+  /* An expired session is context, not a rejection of anything the visitor has
+     typed yet — so it reads as a notice above the field rather than as a red
+     invalid state on an empty input. It steps aside the moment they start
+     typing, or if a real submit error takes its place. */
+  const showNotice = expired && !error && !password;
 
   async function onSubmit(e: FormEvent) {
     e.preventDefault();
@@ -65,6 +71,13 @@ export function LoginForm({ next }: { next?: string }) {
         <form onSubmit={onSubmit} className="bg-surface rounded-card shadow-card p-7">
           <h1 className="text-[15px] font-semibold text-text">{t('login.title')}</h1>
           <p className="text-xs text-text-sub leading-[1.6] mt-1.5">{t('login.lead')}</p>
+
+          {showNotice && (
+            <p className="flex items-start gap-1.5 mt-4 rounded-sm bg-orange-bg px-3 py-2 text-xs font-medium text-orange leading-[1.5]">
+              <Icon name="alert" size={13} className="mt-px" />
+              {t('login.expired')}
+            </p>
+          )}
 
           <label className="block mt-6">
             <span className="text-xs font-semibold text-text-sub">{t('login.password')}</span>

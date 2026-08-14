@@ -26,7 +26,8 @@ function safeNext(raw: string | null): string {
 
 export async function middleware(req: NextRequest) {
   const { pathname, search } = req.nextUrl;
-  const authed = await verifySessionToken(req.cookies.get(SESSION_COOKIE)?.value);
+  const token = req.cookies.get(SESSION_COOKIE)?.value;
+  const authed = await verifySessionToken(token);
 
   if (pathname === '/login') {
     if (!authed) return NextResponse.next();
@@ -37,5 +38,14 @@ export async function middleware(req: NextRequest) {
 
   const url = new URL('/login', req.url);
   if (pathname !== '/') url.searchParams.set('next', pathname + search);
-  return NextResponse.redirect(url);
+  /* Carrying a cookie we refused is a different story from carrying none: the
+     session expired, or the secrets moved under it. Say so, rather than
+     bouncing the visitor back to a blank form that looks like their correct
+     password did nothing. */
+  if (token) url.searchParams.set('expired', '1');
+
+  const res = NextResponse.redirect(url);
+  // Drop the rejected cookie so it stops being replayed on every request.
+  if (token) res.cookies.delete(SESSION_COOKIE);
+  return res;
 }

@@ -51,18 +51,31 @@ export function isAuthConfigured(): boolean {
   return config() !== null;
 }
 
-let cachedKey: Promise<CryptoKey> | null = null;
+/* The cache is keyed by the material it was derived from, never just "have we
+   built one yet". Editing .env.local reloads env without tearing down every
+   module, and the signer (a node route) and the verifier (edge middleware) are
+   separate instances — a config-blind cache lets one hold a key derived from
+   the old password while the other moves on. The cookie that /api/auth/login
+   mints then fails verification in middleware, and the login screen silently
+   redirects to itself with no error to show for it. */
+let cached: { material: string; key: Promise<CryptoKey> } | null = null;
 
 function hmacKey(cfg: AuthConfig): Promise<CryptoKey> {
-  cachedKey ??= crypto.subtle.importKey(
-    'raw',
-    // NUL-separated so ("ab", "c") and ("a", "bc") can never derive the same key.
-    enc.encode(`${cfg.secret}\u0000${cfg.password}`),
-    { name: 'HMAC', hash: 'SHA-256' },
-    false,
-    ['sign'],
-  );
-  return cachedKey;
+  // NUL-separated so ("ab", "c") and ("a", "bc") can never derive the same key.
+  const material = `${cfg.secret}\u0000${cfg.password}`;
+  if (cached?.material !== material) {
+    cached = {
+      material,
+      key: crypto.subtle.importKey(
+        'raw',
+        enc.encode(material),
+        { name: 'HMAC', hash: 'SHA-256' },
+        false,
+        ['sign'],
+      ),
+    };
+  }
+  return cached.key;
 }
 
 /* --- constant-time compare ------------------------------------------------ */

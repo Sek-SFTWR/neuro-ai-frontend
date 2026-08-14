@@ -22,6 +22,10 @@ export const login = {
     ja: '接続できませんでした。もう一度お試しください。',
     en: 'Could not reach the server. Please try again.',
   },
+  'login.expired': {
+    ja: 'セッションの有効期限が切れました。もう一度ログインしてください。',
+    en: 'Your session has expired. Please log in again.',
+  },
   'login.note': {
     ja: 'これはモックUIです。実データは含まれていません。',
     en: 'This is a mock UI. It contains no real data.',
