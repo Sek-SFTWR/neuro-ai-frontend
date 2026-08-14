@@ -1,0 +1,27 @@
+/** Strings reused across many screens — actions, generic labels. Namespaced
+    "common.*" so per-screen dictionaries never need to redeclare these. */
+export const common = {
+  'common.cancel': { ja: 'キャンセル', en: 'Cancel' },
+  'common.save': { ja: '保存する', en: 'Save' },
+  'common.delete': { ja: '削除', en: 'Delete' },
+  'common.deleteConfirmTitle': { ja: '削除しますか？', en: 'Delete?' },
+  'common.edit': { ja: '編集', en: 'Edit' },
+  'common.close': { ja: '閉じる', en: 'Close' },
+  'common.add': { ja: '追加', en: 'Add' },
+  'common.selectAll': { ja: '全選択', en: 'Select all' },
+  'common.deselectAll': { ja: '選択解除', en: 'Deselect all' },
+  'common.showAll': { ja: '全表示', en: 'Show all' },
+  'common.hideAll': { ja: '全非表示', en: 'Hide all' },
+  'common.search': { ja: '検索', en: 'Search' },
+  'common.refresh': { ja: '更新', en: 'Refresh' },
+  'common.rename': { ja: '名称変更', en: 'Rename' },
+  'common.viewDetail': { ja: '詳細を見る', en: 'View detail' },
+  'common.detail': { ja: '詳細', en: 'Detail' },
+  'common.average': { ja: '平均', en: 'Average' },
+  'common.retry': { ja: '再試行', en: 'Retry' },
+  'common.grid': { ja: 'カード表示', en: 'Grid view' },
+  'common.list': { ja: '一覧表示', en: 'List view' },
+  'common.show': { ja: '表示', en: 'Show' },
+  'common.hide': { ja: '非表示', en: 'Hide' },
+  'common.manage': { ja: '管理', en: 'Manage' },
+} satisfies Record<string, { ja: string; en: string }>;

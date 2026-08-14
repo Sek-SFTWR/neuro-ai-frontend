@@ -1,0 +1,17 @@
+export const shell = {
+  'shell.brand': { ja: 'Movie Simulator', en: 'Movie Simulator' },
+  'shell.nav.aria': { ja: 'メインナビゲーション', en: 'Main navigation' },
+  'shell.nav.lightTheme': { ja: 'ライトテーマ', en: 'Light theme' },
+  'shell.nav.darkTheme': { ja: 'ダークテーマ', en: 'Dark theme' },
+  'shell.nav.evaluate': { ja: '評価', en: 'Evaluate' },
+  'shell.nav.history': { ja: '実行履歴', en: 'History' },
+  'shell.nav.personas': { ja: 'ペルソナ管理', en: 'Personas' },
+  'shell.nav.axes': { ja: '評価軸設定', en: 'Axes settings' },
+  'shell.nav.help': { ja: 'ヘルプ', en: 'Help' },
+  'shell.nav.logout': { ja: 'ログアウト', en: 'Log out' },
+  'shell.nav.helpComingSoon': { ja: 'ヘルプセンターは準備中です', en: 'The help center is coming soon.' },
+  'shell.nav.loggedOut': { ja: 'ログアウトしました', en: 'You have been logged out.' },
+  'shell.searchPersonas': { ja: 'ペルソナを検索', en: 'Search personas' },
+  'shell.account': { ja: 'アカウント', en: 'Account' },
+  'shell.language': { ja: '言語', en: 'Language' },
+} satisfies Record<string, { ja: string; en: string }>;
