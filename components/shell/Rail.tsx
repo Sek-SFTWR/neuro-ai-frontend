@@ -1,5 +1,6 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
 import { Icon, type IconName } from '@/components/Icon';
 import { useStore } from '@/lib/store';
 import { useActions } from '@/lib/actions';
@@ -71,6 +72,21 @@ export function Rail() {
   const { goSection } = useActions();
   const toast = useToast();
   const t = useT();
+  const router = useRouter();
+
+  /* The store holds only mock data, so there is nothing to clear on the client
+     — dropping the cookie is the whole of signing out. router.refresh() makes
+     middleware re-evaluate and bounce us to /login. */
+  async function logout() {
+    try {
+      await fetch('/api/auth/logout', { method: 'POST' });
+    } catch {
+      /* the cookie may already be gone; the redirect below settles it either way */
+    }
+    toast.show(t('shell.nav.loggedOut'));
+    router.replace('/login');
+    router.refresh();
+  }
 
   return (
     <nav
@@ -102,7 +118,7 @@ export function Rail() {
 
       <RailGroup bottom>
         <RailItem label={t('shell.nav.help')} icon="help" onClick={() => toast.show(t('shell.nav.helpComingSoon'))} />
-        <RailItem label={t('shell.nav.logout')} icon="logout" onClick={() => toast.show(t('shell.nav.loggedOut'))} />
+        <RailItem label={t('shell.nav.logout')} icon="logout" onClick={logout} />
       </RailGroup>
     </nav>
   );

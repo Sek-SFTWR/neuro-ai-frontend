@@ -1,4 +1,5 @@
 import { common } from './common';
+import { login } from './login';
 import { shell } from './shell';
 
 /** One namespace file per screen (personas.ts, history.ts, …)
@@ -7,5 +8,6 @@ import { shell } from './shell';
     screens never conflicts on this file. */
 export const DICT: Record<string, { ja: string; en: string }> = {
   ...common,
+  ...login,
   ...shell,
 };
