@@ -79,12 +79,6 @@ export function RegisterForm() {
           autoComplete="name" autoFocus
         />
         <AuthField
-          label={t('register.company')} name="organization" type="text"
-          placeholder={t('register.companyPlaceholder')}
-          value={form.company} onChange={set('company')}
-          autoComplete="organization"
-        />
-        <AuthField
           label={t('login.email')} name="email" type="email" inputMode="email"
           placeholder={t('login.emailPlaceholder')}
           value={form.email} onChange={set('email')} error={errors.email}

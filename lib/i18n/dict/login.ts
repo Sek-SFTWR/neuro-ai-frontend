@@ -52,8 +52,6 @@ export const login = {
   },
   'register.name': { ja: '氏名', en: 'Full name' },
   'register.namePlaceholder': { ja: '例：田中 美咲', en: 'e.g. Alex Tanaka' },
-  'register.company': { ja: '会社名・部署（任意）', en: 'Company / team (optional)' },
-  'register.companyPlaceholder': { ja: '例：マーケティング部', en: 'e.g. Marketing' },
   'register.passwordHint': { ja: '8文字以上', en: 'At least 8 characters' },
   'register.confirm': { ja: 'パスワード（確認）', en: 'Confirm password' },
   'register.submit': { ja: 'アカウントを作成', en: 'Create account' },
