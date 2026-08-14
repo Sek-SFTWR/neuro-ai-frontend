@@ -8,19 +8,6 @@ import { attrOf, sortAttrs } from './palette';
 import type { AppState } from './store';
 import type { CompareResult, Evaluation, EvaluationResult, Persona, StatusKey } from './types';
 
-/**
- * A history item is overdue when its due date has passed and it hasn't reached
- * a settled status yet. Lives here rather than beside one of its callers so
- * every surface that renders a due date agrees on what "overdue" means.
- */
-export function isOverdue(due: string, status: StatusKey): boolean {
-  if (!due || status === 'done' || status === 'review') return false;
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  const d = new Date(`${due}T00:00:00`);
-  return d.getTime() < today.getTime();
-}
-
 export function selectedPersonaIds(state: AppState): string[] {
   return state.personas.filter((p) => state.selected[p.id]).map((p) => p.id);
 }

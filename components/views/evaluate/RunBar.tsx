@@ -48,7 +48,12 @@ export function RunButton({ mode, onRun }: { mode: ModeKey; onRun: () => void })
  * both the note and the run button stay put however far the persona list is
  * scrolled — which is why the run button no longer needs a seat in the header.
  */
-export function RunBar({ mode, onCancel, onRun }: { mode: ModeKey; onCancel: () => void; onRun: () => void }) {
+export function RunBar({ mode, onCancel, onRun, onOpenCriteria }: {
+  mode: ModeKey;
+  onCancel: () => void;
+  onRun: () => void;
+  onOpenCriteria: () => void;
+}) {
   const { isCompare, personaCount, videoCount, minVideos } = useRunReady(mode);
 
   let note: React.ReactNode;
@@ -76,9 +81,20 @@ export function RunBar({ mode, onCancel, onRun }: { mode: ModeKey; onCancel: () 
 
   return (
     <div className="flex items-center gap-3 flex-wrap w-full">
+      {/* Leaving is its own thing, so it sits apart from the two buttons that
+          carry the run forward — no chance of reaching for 評価を実行 and
+          landing on キャンセル. */}
+      <Button size="sm" className="shrink-0" onClick={onCancel}>キャンセル</Button>
+
       <div className="text-xs flex items-center gap-1 flex-wrap min-h-[1.4em]">{note}</div>
+
       <div className="flex items-center gap-2 ml-auto shrink-0">
-        <Button size="sm" onClick={onCancel}>キャンセル</Button>
+        {/* The criteria drill-in sits with the run button rather than up in the
+            body: it is the last thing you check before running, and from here
+            it no longer scrolls away with the settings above it. */}
+        <Button size="sm" onClick={onOpenCriteria}>
+          <Icon name="sliders" size={14} />評価基準を設定
+        </Button>
         <RunButton mode={mode} onRun={onRun} />
       </div>
     </div>

@@ -17,6 +17,7 @@ import { useModal } from '@/components/overlays/Modal';
 import { useToast } from '@/components/overlays/Toast';
 import { attrGroups } from '@/lib/selectors';
 import { attrOf, NO_ATTR, PERSONA_COLORS } from '@/lib/palette';
+import { CREATORS } from '@/lib/mock-data';
 import type { Persona } from '@/lib/types';
 
 type ViewMode = 'grid' | 'list';
@@ -91,9 +92,17 @@ function PersonaCard({
         </div>
       )}
 
-      <div className="flex gap-1 pt-2.5 border-t border-line mt-auto">
+      <div className="flex items-center gap-1 pt-2.5 border-t border-line mt-auto">
         <LinkButton className='flex flex-row items-center gap-1' onClick={onEdit}><Icon name="pencil" size={13} />編集</LinkButton>
         <LinkButton className='flex flex-row items-center gap-1' danger onClick={onDelete}><Icon name="trash" size={13} />削除</LinkButton>
+        {/* Who added this persona. It sits with the actions rather than the
+            description because it is provenance, not part of the persona. */}
+        {p.createdBy && (
+          <span className="ml-auto flex items-center gap-1 text-[11px] text-text-mute min-w-0" title={`作成者：${p.createdBy}`}>
+            <Icon name="user" size={12} />
+            <span className="truncate">{p.createdBy}</span>
+          </span>
+        )}
       </div>
     </article>
   );
@@ -123,6 +132,12 @@ function PersonaRow({
         <span className="hidden min-[680px]:inline-flex shrink-0 max-w-[150px]"><AttrChip label={attrOf(p)} /></span>
         {p.trait && <span className="text-xs text-text-sub flex-1 min-w-0 truncate">{p.trait}</span>}
         {!p.trait && <span className="flex-1" />}
+        {p.createdBy && (
+          <span className="hidden min-[1000px]:flex items-center gap-1 text-[11px] text-text-mute w-[100px] shrink-0" title={`作成者：${p.createdBy}`}>
+            <Icon name="user" size={12} />
+            <span className="truncate">{p.createdBy}</span>
+          </span>
+        )}
         <span className="flex gap-1 shrink-0">
           {p.detail && (
             <LinkButton className='flex flex-row items-center gap-1' onClick={() => setDetailOpen((v) => !v)}>
@@ -174,9 +189,11 @@ function PersonaModalBody({ persona, onSaved }: { persona: Persona | null; onSav
       }
       const id = `p${Date.now() % 1000000}`;
       const color = PERSONA_COLORS[s.personas.length % PERSONA_COLORS.length];
+      /* Shared login: there is no signed-in identity to read, so a new persona
+         is attributed to the roster's first name until accounts exist. */
       return {
         ...s,
-        personas: [...s.personas, { id, color, ...payload }],
+        personas: [...s.personas, { id, color, createdBy: CREATORS[0], ...payload }],
         selected: { ...s.selected, [id]: true },
       };
     });
@@ -225,7 +242,7 @@ function PersonaModalBody({ persona, onSaved }: { persona: Persona | null; onSav
       </Field>
       <div className="flex items-center justify-end gap-2 -mx-4 -mb-4 mt-2 p-4 border-t border-line">
         <Button variant="outline" size="sm" onClick={modal.close}>キャンセル</Button>
-        <Button variant="black" size="sm" onClick={save}>保存する</Button>
+        <Button variant="accent" size="sm" onClick={save}>保存する</Button>
       </div>
     </>
   );
@@ -392,7 +409,7 @@ export function PersonasView() {
             <Icon name="trash" size={14} />選択削除{selectedIds.length ? `（${selectedIds.length}）` : ''}
           </Button>
           <Button variant="danger" size="sm" onClick={deleteAll}>全削除</Button>
-          <Button variant="black" size="sm" onClick={() => openPersonaModal(null)}><Icon name="plus" size={14} stroke="#fff" />新規ペルソナ</Button>
+          <Button variant="accent" size="sm" onClick={() => openPersonaModal(null)}><Icon name="plus" size={14} />新規ペルソナ</Button>
         </>
       }
     />

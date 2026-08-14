@@ -5,8 +5,8 @@ import { useStore } from './store';
 import { useToast } from '@/components/overlays/Toast';
 import { useProgress } from '@/components/overlays/ProgressModal';
 import { selectedPersonaIds } from './selectors';
-import { simulate } from './mock-data';
-import { MODES } from './palette';
+import { CREATORS, simulate } from './mock-data';
+import { MODELS, MODES } from './palette';
 import type { ModeKey } from './types';
 
 function validate(state: ReturnType<typeof useStore>['state'], mode: ModeKey): string | null {
@@ -25,6 +25,11 @@ function validate(state: ReturnType<typeof useStore>['state'], mode: ModeKey): s
     if (u2 + inputs.mixcompare.files.length < 2) return 'YouTube URLと動画ファイルを合わせて2件以上指定してください';
   }
   if (!ids.length) return 'ペルソナを1人以上選択してください';
+  /* Last line of defence: a compare run submitted while the engine cannot take
+     more than one video would produce a result the model never computed. */
+  if (MODES[mode].compare && !MODELS[state.model].supportsCompare) {
+    return `${MODELS[state.model].label}は比較評価に対応していません。設定でモデルを変更してください`;
+  }
   return null;
 }
 
@@ -104,12 +109,14 @@ export function useEvaluationRun() {
 
     progress.close();
 
-    const due = new Date(Date.now() + 5 * 864e5).toISOString().slice(0, 10);
     const savedAt = new Date().toISOString().slice(0, 16).replace('T', ' ');
     const resultDurationSec = res.isCompare ? res.results[0].meta.durationSec : res.meta.durationSec;
 
     update((prev) => ({
       ...prev,
+      /* A finished run goes straight to its result — the setup screen has
+         nothing left to say once the run it configured has produced one. */
+      section: 'result',
       compare: res.isCompare ? res : null,
       result: res.isCompare ? null : res,
       compareTab: res.isCompare ? 'summary' : prev.compareTab,
@@ -121,12 +128,13 @@ export function useEvaluationRun() {
           title: res.meta.title,
           mode,
           status: 'review',
-          priority: '中',
+          /* Shared login: there is no signed-in identity to read, so a run
+             is attributed to the roster's first name until accounts exist. */
+          createdBy: CREATORS[0],
           savedAt,
           durationSec: resultDurationSec,
           personaCount: ids.length,
           axesDone: prev.axes.length,
-          due,
           files: dur,
           comments: ids.length,
           model: s.model,

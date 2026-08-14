@@ -36,7 +36,7 @@ function RailItem({
 }) {
   const activeCls =
     variant === 'section' && active
-      ? 'bg-black-ms text-white hover:bg-black-hover'
+      ? 'bg-accent text-accent-fg hover:bg-accent-hover'
       : variant === 'theme' && active
         ? 'text-text'
         : 'text-rail-icon hover:text-text hover:bg-surface-hover';

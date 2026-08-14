@@ -1,5 +1,6 @@
 export const settings = {
   'settings.title': { ja: '設定', en: 'Settings' },
+  'settings.back': { ja: '戻る', en: 'Back' },
   'settings.sub': {
     ja: '表示・解析・アカウントの設定です。この画面の変更はすぐに反映されます。',
     en: 'Display, analysis and account settings. Changes here apply immediately.',
@@ -25,13 +26,21 @@ export const settings = {
   'settings.themeLight': { ja: 'ライト', en: 'Light' },
   'settings.themeDark': { ja: 'ダーク', en: 'Dark' },
   'settings.language': { ja: '表示言語', en: 'Language' },
+  'settings.accent': { ja: 'システムカラー', en: 'System colour' },
+  /* Says plainly that this control exists for the review, not for end users —
+     otherwise it reads as a shipped personalisation feature. */
+  'settings.accentNote': {
+    ja: '※ モックUI用の項目です。ブランドカラーをその場で確認・決定していただくために用意しています。実装時は決定した1色に固定され、この選択欄は表示されません。',
+    en: 'Note: this control exists for the mock only, so the brand colour can be reviewed and agreed on the spot. In the real build it is fixed to the chosen colour and this selector does not appear.',
+  },
 
   /* --- analysis ------------------------------------------------------------- */
   'settings.analysis': { ja: '解析', en: 'Analysis' },
   'settings.model': { ja: '解析モデル', en: 'Analysis model' },
-  'settings.modelNote': {
-    ja: 'すべての評価実行で使われる既定のモデルです。',
-    en: 'The default model used for every evaluation run.',
+  'settings.splice': { ja: '解析間隔（スプライス）', en: 'Analysis interval (splice)' },
+  'settings.analysisNote': {
+    ja: 'すべての評価実行で使われる既定値です。',
+    en: 'The defaults used for every evaluation run.',
   },
 
   /* --- criteria ------------------------------------------------------------- */

@@ -31,7 +31,6 @@ const COMPARE_TABS: TabItem<CompareTabKey>[] = [
 
 interface Actions {
   exporting: boolean;
-  onSave: () => void;
   onExport: () => void;
 }
 
@@ -39,7 +38,7 @@ function Spinner() {
   return <span className="w-3.5 h-3.5 rounded-full border-2 border-current border-t-transparent animate-spin-fast" />;
 }
 
-function CompareHeader({ cmp, exporting, onSave, onExport }: { cmp: CompareResult } & Actions) {
+function CompareHeader({ cmp, exporting, onExport, onOpenSettings }: { cmp: CompareResult; onOpenSettings: () => void } & Actions) {
   const m = MODES[cmp.mode];
 
   return (
@@ -52,7 +51,13 @@ function CompareHeader({ cmp, exporting, onSave, onExport }: { cmp: CompareResul
           <span className="block text-xs text-text-sub mt-0.5">{cmp.results.length}本 ・ {cmp.personas.length}名のペルソナ ・ 評価軸{cmp.axes.length}件</span>
         </span>
         <span className="flex items-center gap-2">
-          <Button size="sm" onClick={onSave}><Icon name="save" size={14} />履歴を更新保存</Button>
+          {/* Duplicated in the docked bar because that bar only appears once
+              the tab strip sticks — on a short result it may never show, which
+              would leave the header with no way to start a run from these
+              settings. NOTE: it opens the settings as they stand, not the ones
+              this result was produced with; the run's inputs are not stored on
+              the result, so one opened from history cannot repopulate them. */}
+          <Button size="sm" onClick={onOpenSettings}><Icon name="refresh" size={14} />同じ設定で再評価</Button>
           <Button variant="outline" size="sm" onClick={onExport}>
             {exporting ? <Spinner /> : <Icon name="download" size={14} />}
             {exporting ? '作成中…' : 'PPTX出力'}
@@ -121,13 +126,12 @@ function DockedIdentity({ cmp }: { cmp: CompareResult }) {
   );
 }
 
-function DockedActions({ onOpenSettings, exporting, onSave, onExport }: { onOpenSettings: () => void } & Actions) {
+function DockedActions({ onOpenSettings, exporting, onExport }: { onOpenSettings: () => void } & Actions) {
   return (
     <span className="flex items-center gap-2 pl-3 pr-1">
       <Button variant="outline" size="sm" onClick={onOpenSettings}>
-        <Icon name="sliders" size={14} />設定を編集
+        <Icon name="refresh" size={14} />同じ設定で再評価
       </Button>
-      <IconButton label="履歴を更新保存" onClick={onSave}><Icon name="save" size={14} /></IconButton>
       <IconButton label="PPTX出力" onClick={onExport}>{exporting ? <Spinner /> : <Icon name="download" size={14} />}</IconButton>
     </span>
   );
@@ -142,15 +146,12 @@ export function CompareView({ cmp, onOpenSettings }: { cmp: CompareResult; onOpe
 
   /* Held here so the header card and the docked bar cannot disagree about
      whether the export is running. */
-  function onSave() {
-    toast.show('履歴を更新保存しました');
-  }
   function onExport() {
     if (exporting) return;
     setExporting(true);
     setTimeout(() => { setExporting(false); toast.show('PPTXを作成しました'); }, 1200);
   }
-  const actions: Actions = { exporting, onSave, onExport };
+  const actions: Actions = { exporting, onExport };
 
   let body: React.ReactNode;
   switch (state.compareTab) {
@@ -164,7 +165,7 @@ export function CompareView({ cmp, onOpenSettings }: { cmp: CompareResult; onOpe
 
   return (
     <>
-      <CompareHeader cmp={cmp} {...actions} />
+      <CompareHeader cmp={cmp} onOpenSettings={onOpenSettings} {...actions} />
       <StickyTabBar
         items={COMPARE_TABS}
         activeKey={state.compareTab}

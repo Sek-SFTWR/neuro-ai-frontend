@@ -48,6 +48,10 @@ export function SettingsSummary({ label, onOpen }: { label: string; onOpen: () =
         <span className="block text-xs text-text-sub truncate mt-0.5">
           {inputSummary(mode, state.inputs)} ・ ペルソナ {personaCount}名選択中
           {' '}・ {MODELS[state.model].short} ・ {spliceLabel(state.splice)}ごと
+          {/* Called out because it is the one setting that changes the run
+              while being invisible from here — a prompt addition left over
+              from a previous video would otherwise shape this one unnoticed. */}
+          {state.instruction.trim() && ' ・ 追加指示あり'}
         </span>
       </span>
       <span className="inline-flex items-center gap-1.5 text-xs font-medium text-accent shrink-0 transition-transform duration-180 group-hover:translate-x-0.5">

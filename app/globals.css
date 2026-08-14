@@ -34,6 +34,10 @@
   /* --- Color: accents ----------------------------------------------------- */
   --color-accent: #f4581f;
   --color-accent-hover: #db4a15;
+  /* Text placed ON the accent. Half the selectable accents are light enough
+     that white is unreadable on them, so this travels with the accent instead
+     of every surface hardcoding text-white. */
+  --color-accent-fg: #ffffff;
   --color-black-ms: #0a0a0a;
   --color-black-hover: #262626;
 
@@ -403,11 +407,6 @@
 }
 
 /* --- Native select arrow -------------------------------------------------- */
-.ms-select {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%239CA3AF' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-}
-
 /* --- Sticky first column on the wide evidence matrices -------------------- */
 .matrix th:first-child,
 .matrix td:first-child {

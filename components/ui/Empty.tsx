@@ -6,10 +6,14 @@ interface EmptyProps {
   title: string;
   sub?: string;
   action?: string;
+  /** Defaults to `plus` because most empty states offer to create the missing
+      thing. Override it when the action opens something that already exists —
+      a plus there promises a new record and delivers navigation. */
+  actionIcon?: IconName;
   onAction?: () => void;
 }
 
-export function Empty({ icon = 'video', title, sub, action, onAction }: EmptyProps) {
+export function Empty({ icon = 'video', title, sub, action, actionIcon = 'plus', onAction }: EmptyProps) {
   return (
     <div className="flex flex-col items-center gap-2 bg-surface rounded-card py-16 px-6 shadow-card text-center">
       <span className="w-9 h-9 rounded-chip bg-fill flex items-center justify-center shrink-0 text-text-sub mb-1 [&_svg]:stroke-current">
@@ -19,7 +23,7 @@ export function Empty({ icon = 'video', title, sub, action, onAction }: EmptyPro
       {sub && <div className="text-[13px] font-normal text-text-sub">{sub}</div>}
       {action && (
         <Button variant="black" className="mt-3" onClick={onAction}>
-          <Icon name="plus" size={15} stroke="#fff" />
+          <Icon name={actionIcon} size={15} stroke="#fff" />
           {action}
         </Button>
       )}

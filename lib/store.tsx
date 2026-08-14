@@ -18,12 +18,18 @@ import { initResultFlags } from './selectors';
 export interface AppState {
   /* --- shell -------------------------------------------------------------- */
   section: SectionKey;
+  /** The screen 設定 was opened from, so it has somewhere to go back to. */
+  settingsFrom: SectionKey;
   mode: ModeKey;
   /* --- run settings, shared by every mode ---------------------------------- */
   model: ModelKey;
   splice: SpliceSec;
+  /** Free-text appended to the analysis prompt for the next run. */
+  instruction: string;
   showBanner: boolean;
   theme: 'light' | 'dark';
+  /** Key into palette ACCENTS — the system's primary colour. */
+  accent: string;
   locale: 'ja' | 'en';
 
   /* --- data ----------------------------------------------------------------- */
@@ -79,11 +85,14 @@ function buildInitialState(): AppState {
     /* 実行履歴 is the app's home now that the dashboard is gone — it is the one
        screen that shows every saved result at once. */
     section: 'history',
+    settingsFrom: 'history',
     mode: 'youtube',
     model: 'neuroai',
     splice: 1,
+    instruction: '',
     showBanner: true,
     theme: 'light',
+    accent: 'brand',
     locale: 'ja',
 
     personas,

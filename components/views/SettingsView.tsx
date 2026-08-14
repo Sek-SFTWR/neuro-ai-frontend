@@ -6,13 +6,15 @@ import { Icon } from '@/components/Icon';
 import { Button } from '@/components/ui/Button';
 import { PageHeader } from '@/components/ui/PageHeader';
 import { Segmented, type SegmentedItem } from '@/components/ui/Segmented';
+import { Select } from '@/components/ui/Select';
 import { AxesEditor } from '@/components/views/AxesEditor';
 import { useModal } from '@/components/overlays/Modal';
 import { useToast } from '@/components/overlays/Toast';
 import { useStore } from '@/lib/store';
-import { MODEL_ORDER, MODELS } from '@/lib/palette';
+import { useActions } from '@/lib/actions';
+import { ACCENTS, accentOf, MODEL_ORDER, MODELS, MODES, SPLICE_ORDER, spliceLabel } from '@/lib/palette';
 import { useT, type Locale } from '@/lib/i18n';
-import type { ModelKey } from '@/lib/types';
+import type { ModelKey, SpliceSec } from '@/lib/types';
 
 /**
  * A titled block on the settings page. Every group is framed the same way so
@@ -49,7 +51,8 @@ function Row({ label, sub, children }: { label: string; sub?: string; children: 
 }
 
 export function SettingsView() {
-  const { state, patch } = useStore();
+  const { state, patch, update } = useStore();
+  const { goSection } = useActions();
   const t = useT();
   const toast = useToast();
   const modal = useModal();
@@ -72,6 +75,13 @@ export function SettingsView() {
     key: k,
     label: MODELS[k].label,
     icon: MODELS[k].icon,
+  }));
+
+  /* SpliceSec is a union of number literals, so the radiogroup keys are their
+     string forms and are mapped back on the way out. */
+  const SPLICE_ITEMS: SegmentedItem<string>[] = SPLICE_ORDER.map((s) => ({
+    key: String(s),
+    label: spliceLabel(s),
   }));
 
   /* The store holds only mock data, so there is nothing to clear on the client
@@ -97,7 +107,7 @@ export function SettingsView() {
       title: t('settings.criteriaOpen'),
       wide: true,
       body: <AxesEditor />,
-      foot: <Button size="sm" variant="black" onClick={modal.dismiss}>{t('settings.close')}</Button>,
+      foot: <Button size="sm" variant="accent" onClick={modal.dismiss}>{t('settings.close')}</Button>,
     });
   }
 
@@ -107,7 +117,24 @@ export function SettingsView() {
      one, and a lone left-aligned column leaves the page looking unfinished.
      Centring the whole block keeps the header sitting over its own content. */
   return (
-    <div className="w-full max-w-[720px] mx-auto flex flex-col gap-6">
+    <div className="w-full max-w-[720px] mx-auto flex flex-col gap-6 [&>div:first-child]:-mb-4">
+      {/* Settings is reached from a button in the header rather than the rail,
+          so it is the one screen with no lit rail entry to click back out of —
+          it has to carry its own way back, to wherever it was opened from. */}
+      {/* Sticks below the top bar so the way out stays reachable from the foot
+          of a long settings page. The bar spans the column and carries the page
+          background, so content scrolls under it rather than through it. */}
+      <div className="sticky top-(--topbar-h) z-[250] bg-page pt-2 pb-1">
+        <button
+          type="button"
+          onClick={() => goSection(state.settingsFrom)}
+          className="inline-flex items-center gap-1 -ml-1.5 px-1.5 py-1 rounded-sm text-xs font-medium text-text-sub transition-colors duration-180 hover:text-text hover:bg-fill"
+        >
+          <Icon name="chevronLeft" size={14} />
+          {t('settings.back')}
+        </button>
+      </div>
+
       <PageHeader title={t('settings.title')} sub={t('settings.sub')} />
 
       <div className="flex flex-col gap-4">
@@ -122,6 +149,27 @@ export function SettingsView() {
             />
           </Row>
           <div className="border-t border-line" />
+          <Row label={t('settings.accent')}>
+            <span className="flex items-center gap-2">
+              {/* The swatch is the actual answer to "what colour is that?" —
+                  the name alone cannot settle a brand decision. */}
+              <span
+                aria-hidden="true"
+                className="w-5 h-5 rounded-full border border-line shrink-0"
+                style={{ background: accentOf(state.accent).color }}
+              />
+              <Select
+                small
+                fullWidth={false}
+                aria-label={t('settings.accent')}
+                value={state.accent}
+                onChange={(e) => patch({ accent: e.target.value })}
+                options={ACCENTS.map((a) => ({ value: a.key, label: a.label }))}
+              />
+            </span>
+          </Row>
+          <p className="text-[11px] text-text-mute leading-[1.7] -mt-1">{t('settings.accentNote')}</p>
+          <div className="border-t border-line" />
           <Row label={t('settings.language')}>
             <Segmented
               label={t('settings.language')}
@@ -133,13 +181,31 @@ export function SettingsView() {
           </Row>
         </Group>
 
-        <Group title={t('settings.analysis')} sub={t('settings.modelNote')}>
+        <Group title={t('settings.analysis')} sub={t('settings.analysisNote')}>
           <Row label={t('settings.model')}>
             <Segmented
               label={t('settings.model')}
               items={MODEL_ITEMS}
               value={state.model}
-              onChange={(k) => patch({ model: k })}
+              /* Switching to an engine that cannot compare while a compare
+                 mode is selected would leave the evaluate screen sitting on a
+                 mode its own picker greys out, so the mode falls back with it.
+                 Existing results are left alone — they are already computed. */
+              onChange={(k) => update((s) => (
+                !MODELS[k].supportsCompare && MODES[s.mode].compare
+                  ? { ...s, model: k, mode: 'youtube' }
+                  : { ...s, model: k }
+              ))}
+              className="[&>span:first-child]:sr-only"
+            />
+          </Row>
+          <div className="border-t border-line" />
+          <Row label={t('settings.splice')}>
+            <Segmented
+              label={t('settings.splice')}
+              items={SPLICE_ITEMS}
+              value={String(state.splice)}
+              onChange={(k) => patch({ splice: Number(k) as SpliceSec })}
               className="[&>span:first-child]:sr-only"
             />
           </Row>

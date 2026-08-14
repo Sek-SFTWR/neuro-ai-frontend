@@ -44,10 +44,10 @@ export function TopBar() {
           aria-current={onSettings ? 'page' : undefined}
           onClick={() => goSection('settings')}
           className={`w-(--ctl-h) h-(--ctl-h) rounded-full shadow-card flex items-center justify-center transition-[background-color,color,transform] duration-180 hover:scale-[1.06] active:scale-[0.96] ${
-            onSettings ? 'bg-black-ms text-white' : 'bg-surface text-text-sub hover:bg-surface-hover hover:text-text'
+            onSettings ? 'bg-accent text-accent-fg' : 'bg-surface text-text-sub hover:bg-surface-hover hover:text-text'
           }`}
         >
-          <Icon name="sliders" size={17} />
+          <Icon name="settings" size={17} />
         </button>
       </div>
     </header>

@@ -13,25 +13,21 @@ import { useActions } from '@/lib/actions';
 import { useConfirm, usePromptModal } from '@/components/overlays/Confirm';
 import { useToast } from '@/components/overlays/Toast';
 import { MODE_ORDER, MODES, STATUS, STATUS_ORDER } from '@/lib/palette';
-import { AxesProgress, Badges, Due, People, Title } from './history/CardContent';
+import { AxesProgress, Badges, Created, Creator, People, Title } from './history/CardContent';
 import type { HistoryEntry, ModeKey, Persona, StatusKey } from '@/lib/types';
 
 /* 'custom' is the true default — the natural, drag-reorderable order — kept
    distinct from 'savedAt_desc' so selecting an explicit sort (including
    "newest first") doesn't silently re-sort on every render and mask drag
    reordering underneath it. */
-type SortKey = 'custom' | 'savedAt_desc' | 'savedAt_asc' | 'priority' | 'due';
+type SortKey = 'custom' | 'savedAt_desc' | 'savedAt_asc';
 type HistoryViewMode = 'list' | 'grid';
 
 const SORT_OPTIONS: { value: SortKey; label: string }[] = [
   { value: 'custom', label: '並び順（ドラッグで変更）' },
   { value: 'savedAt_desc', label: '保存日時（新しい順）' },
   { value: 'savedAt_asc', label: '保存日時（古い順）' },
-  { value: 'priority', label: '優先度（高い順）' },
-  { value: 'due', label: '期限（近い順）' },
 ];
-
-const PRIORITY_RANK: Record<string, number> = { 高: 0, 中: 1, 低: 2 };
 
 interface CardProps {
   h: HistoryEntry;
@@ -91,7 +87,8 @@ function HistoryRow({
       </div>
 
       <div className="hidden min-[1100px]:flex w-[190px] shrink-0"><AxesProgress h={h} axesTotal={axesTotal} /></div>
-      <div className="hidden min-[900px]:flex shrink-0"><Due h={h} /></div>
+      <div className="hidden min-[1000px]:flex w-[110px] shrink-0"><Creator h={h} /></div>
+      <div className="hidden min-[900px]:flex shrink-0"><Created h={h} /></div>
       <div className="hidden min-[1280px]:flex shrink-0"><People h={h} personas={personas} spread={false} /></div>
 
       <span className="flex gap-1 shrink-0"><Actions onView={onView} onRename={onRename} onDelete={onDelete} /></span>
@@ -124,7 +121,10 @@ function HistoryCard({
       <AxesProgress h={h} axesTotal={axesTotal} />
 
       <div className="flex flex-col gap-2 pt-2 border-t border-line">
-        <Due h={h} />
+        <div className="flex items-center justify-between gap-3 min-w-0">
+          <Creator h={h} />
+          <Created h={h} />
+        </div>
         <People h={h} personas={personas} />
       </div>
 
@@ -179,8 +179,6 @@ export function HistoryView() {
     // 'custom' applies no transform at all — it IS the drag-reordered order.
     if (sort === 'savedAt_asc') list = list.slice().sort((a, b) => (a.savedAt < b.savedAt ? -1 : 1));
     else if (sort === 'savedAt_desc') list = list.slice().sort((a, b) => (a.savedAt > b.savedAt ? -1 : 1));
-    else if (sort === 'priority') list = list.slice().sort((a, b) => PRIORITY_RANK[a.priority] - PRIORITY_RANK[b.priority]);
-    else if (sort === 'due') list = list.slice().sort((a, b) => (a.due < b.due ? -1 : 1));
     return list;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [naturalRows, search, modeFilter, statusFilter, sort]);

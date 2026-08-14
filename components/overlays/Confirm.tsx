@@ -71,7 +71,7 @@ export function usePromptModal() {
         foot: (
           <>
             <Button variant="outline" size="sm" onClick={() => finish(null)}>キャンセル</Button>
-            <Button variant="black" size="sm" onClick={submit}>{opts.confirmLabel || '保存する'}</Button>
+            <Button variant="accent" size="sm" onClick={submit}>{opts.confirmLabel || '保存する'}</Button>
           </>
         ),
       });

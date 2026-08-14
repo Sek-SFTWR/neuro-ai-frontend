@@ -5,7 +5,7 @@
    ========================================================================== */
 
 import type { IconName } from '@/components/Icon';
-import type { ModeKey, ModelKey, Persona, PriorityKey, SpliceSec, StatusKey } from './types';
+import type { ModeKey, ModelKey, Persona, SpliceSec, StatusKey } from './types';
 
 /* --- Status (kanban columns, mode badges) ------------------------------- */
 export const STATUS: Record<StatusKey, { key: StatusKey; label: string; fg: string; bg: string }> = {
@@ -18,12 +18,6 @@ export const STATUS: Record<StatusKey, { key: StatusKey; label: string; fg: stri
 export const STATUS_ORDER: StatusKey[] = ['todo', 'running', 'review', 'done'];
 
 /* --- Priority ----------------------------------------------------------- */
-export const PRIORITY: Record<PriorityKey, { fg: string; bg: string }> = {
-  高: { fg: '#DC2626', bg: 'rgba(220,38,38,0.08)' },
-  中: { fg: '#EA580C', bg: 'rgba(234,88,12,0.08)' },
-  低: { fg: '#16A34A', bg: 'rgba(22,163,74,0.08)' },
-};
-
 /* --- Evaluation modes --------------------------------------------------- */
 export interface ModeDef {
   key: ModeKey;
@@ -43,6 +37,61 @@ export const MODES: Record<ModeKey, ModeDef> = {
 
 export const MODE_ORDER: ModeKey[] = ['youtube', 'file', 'ytcompare', 'filecompare', 'mixcompare'];
 
+/* --- System accent -------------------------------------------------------
+   Selectable so a client can settle the brand colour during review without a
+   rebuild. Each entry carries its own hover shade rather than deriving one:
+   a computed darken looks wrong on the lighter hues, and these are eyeballed.
+   The keys are stored in state, so adding one here is the whole change.
+   -------------------------------------------------------------------------- */
+export interface AccentDef {
+  key: string;
+  label: string;
+  color: string;
+  hover: string;
+  /** Text colour to place ON this accent. Over half of this palette is light
+      enough that white text falls below 3:1 — Yellow is 1.68:1, effectively
+      invisible — so the foreground travels with the colour instead of every
+      surface assuming white. Surfaces read it via --color-accent-fg. */
+  fg: string;
+}
+
+export const ACCENTS: AccentDef[] = [
+  /* The product's own vermilion, first in the list and the default. Not part
+     of the supplied palette — it is the existing brand mark. White on it is
+     3.35:1 (below AA); black is 6.26:1, so the same rule as every other entry
+     applies and its foreground is black. */
+  { key: 'brand', label: 'ブランドオレンジ', color: '#F4581F', hover: '#DB4A15', fg: '#000000' },
+
+  /* The client's supplied palette, in their order. Hover is each colour at 85
+     percent lightness; `fg` is whichever of white / near-black scores higher
+     against it — every pairing here clears 4.5:1, which a fixed white could
+     never do across a range this light. */
+  { key: 'lime', label: 'ライム', color: '#A4C400', hover: '#8BA700', fg: '#000000' },
+  { key: 'green', label: 'グリーン', color: '#60A917', hover: '#529014', fg: '#000000' },
+  { key: 'emerald', label: 'エメラルド', color: '#008A00', hover: '#007500', fg: '#000000' },
+  { key: 'teal', label: 'ティール', color: '#00ABA9', hover: '#009190', fg: '#000000' },
+  { key: 'cyan', label: 'シアン', color: '#1BA1E2', hover: '#1789C0', fg: '#000000' },
+  { key: 'cobalt', label: 'コバルト', color: '#0050EF', hover: '#0044CB', fg: '#FFFFFF' },
+  { key: 'indigo', label: 'インディゴ', color: '#6A00FF', hover: '#5A00D9', fg: '#FFFFFF' },
+  { key: 'violet', label: 'バイオレット', color: '#AA00FF', hover: '#9100D9', fg: '#FFFFFF' },
+  { key: 'pink', label: 'ピンク', color: '#F472D0', hover: '#CF61B1', fg: '#000000' },
+  { key: 'magenta', label: 'マゼンタ', color: '#D80073', hover: '#B80062', fg: '#FFFFFF' },
+  { key: 'crimson', label: 'クリムゾン', color: '#A20025', hover: '#8A001F', fg: '#FFFFFF' },
+  { key: 'red', label: 'レッド', color: '#E51400', hover: '#C31100', fg: '#FFFFFF' },
+  { key: 'orange', label: 'オレンジ', color: '#FA6800', hover: '#D55800', fg: '#000000' },
+  { key: 'amber', label: 'アンバー', color: '#F0A30A', hover: '#CC8B09', fg: '#000000' },
+  { key: 'yellow', label: 'イエロー', color: '#E3C800', hover: '#C1AA00', fg: '#000000' },
+  { key: 'brown', label: 'ブラウン', color: '#825A2C', hover: '#6F4D25', fg: '#FFFFFF' },
+  { key: 'olive', label: 'オリーブ', color: '#6D8764', hover: '#5D7355', fg: '#000000' },
+  { key: 'steel', label: 'スチール', color: '#647687', hover: '#556473', fg: '#FFFFFF' },
+  { key: 'mauve', label: 'モーブ', color: '#76608A', hover: '#645275', fg: '#FFFFFF' },
+  { key: 'taupe', label: 'トープ', color: '#87794E', hover: '#736742', fg: '#000000' },
+];
+
+export function accentOf(key: string): AccentDef {
+  return ACCENTS.find((a) => a.key === key) ?? ACCENTS[0];
+}
+
 /* --- Analysis engine ---------------------------------------------------- */
 export interface ModelDef {
   key: ModelKey;
@@ -51,11 +100,16 @@ export interface ModelDef {
   short: string;
   icon: IconName;
   note: string;
+  /** Whether the engine can score several videos in one run. NeuroAI takes a
+      single file at a time, so the three 比較評価 modes are unavailable to it.
+      Declared here so the picker, the mode guard and the run validator all
+      read one fact instead of three copies of `model === 'neuroai'`. */
+  supportsCompare: boolean;
 }
 
 export const MODELS: Record<ModelKey, ModelDef> = {
-  neuroai: { key: 'neuroai', label: 'NeuroAI モデル', short: 'NeuroAI', icon: 'brain', note: 'ペルソナの反応予測に最適化された自社モデル' },
-  gemini: { key: 'gemini', label: 'Gemini Vision モデル', short: 'Gemini Vision', icon: 'eye', note: '映像の被写体・構図の読み取りに強い汎用モデル' },
+  neuroai: { key: 'neuroai', label: 'NeuroAI モデル', short: 'NeuroAI', icon: 'brain', note: 'ペルソナの反応予測に最適化された自社モデル', supportsCompare: false },
+  gemini: { key: 'gemini', label: 'Gemini Vision モデル', short: 'Gemini Vision', icon: 'eye', note: '映像の被写体・構図の読み取りに強い汎用モデル', supportsCompare: true },
 };
 
 export const MODEL_ORDER: ModelKey[] = ['neuroai', 'gemini'];

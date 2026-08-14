@@ -1,7 +1,7 @@
 /* ==========================================================================
    The presentational half of a result card, lifted from the old dashboard
-   board card so 実行履歴 shows a result the way the board did: priority and
-   title carrying the weight, then how far the axes got, then who and when.
+   board card so 実行履歴 shows a result the way the board did: the title
+   carrying the weight, then how far the axes got, then who made it and when.
 
    Behaviour — drag, selection, view/rename/delete — stays in HistoryView.
    These pieces are shared by both the grid card and the list row, so the two
@@ -9,21 +9,19 @@
    ========================================================================== */
 
 import { Icon } from '@/components/Icon';
-import { Tag, Bar, StatusChip } from '@/components/ui/Badges';
+import { Bar, StatusChip } from '@/components/ui/Badges';
 import { AvatarGroup } from '@/components/ui/Avatar';
-import { isOverdue } from '@/lib/selectors';
-import { MODE_BADGE, MODES, PRIORITY, STATUS } from '@/lib/palette';
+import { MODE_BADGE, MODES, STATUS } from '@/lib/palette';
 import type { HistoryEntry, Persona } from '@/lib/types';
 
-/** Priority, mode and status. The board could drop mode and status — its
-    columns were status, and it was one screen per mode. 実行履歴 filters on
-    both, so both have to stay legible on the card itself. */
+/** Mode and status. The board could drop both — its columns were status, and
+    it was one screen per mode. 実行履歴 filters on both, so both have to stay
+    legible on the card itself. The priority flag that used to lead this row is
+    gone: nothing in the app acted on it. */
 export function Badges({ h }: { h: HistoryEntry }) {
-  const pri = PRIORITY[h.priority];
   const badge = MODE_BADGE[h.mode];
   return (
     <span className="flex items-center gap-1.5 flex-wrap">
-      <Tag label={h.priority} fg={pri.fg} bg={pri.bg} icon="flag" />
       <span
         className="inline-flex items-center rounded-full py-[3px] px-2 text-[10.5px] font-semibold whitespace-nowrap"
         style={{ background: badge.bg, color: badge.fg }}
@@ -67,14 +65,26 @@ export function AxesProgress({ h, axesTotal }: { h: HistoryEntry; axesTotal: num
   );
 }
 
-/** Due date, which turns into an overdue warning once it has passed. */
-export function Due({ h }: { h: HistoryEntry }) {
-  if (!h.due) return null;
-  const overdue = isOverdue(h.due, h.status);
+/** When the run was saved. This was previously labelled 期限 and styled as an
+    overdue warning, but nothing ever set a deadline — the value was always the
+    timestamp the run was created at, so it now says so. */
+export function Created({ h }: { h: HistoryEntry }) {
+  if (!h.savedAt) return null;
   return (
-    <span className={`flex items-center gap-1.5 text-xs whitespace-nowrap ${overdue ? 'font-semibold text-pri-high' : 'font-normal text-text-sub'}`}>
-      <Icon name={overdue ? 'alert' : 'calendar'} size={13} stroke={overdue ? undefined : '#6B7280'} />
-      {overdue ? '期限超過：' : '期限：'}{h.due}
+    <span className="flex items-center gap-1.5 text-xs font-normal text-text-sub whitespace-nowrap">
+      <Icon name="calendar" size={13} stroke="#6B7280" />
+      作成：{h.savedAt}
+    </span>
+  );
+}
+
+/** Who ran it. Reads as a byline next to the personas rather than a metric. */
+export function Creator({ h }: { h: HistoryEntry }) {
+  if (!h.createdBy) return null;
+  return (
+    <span className="flex items-center gap-1.5 text-xs font-normal text-text-sub min-w-0" title={`作成者：${h.createdBy}`}>
+      <Icon name="user" size={13} stroke="#6B7280" />
+      <span className="truncate">{h.createdBy}</span>
     </span>
   );
 }

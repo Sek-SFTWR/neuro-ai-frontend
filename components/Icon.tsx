@@ -25,6 +25,10 @@ const PATHS = {
   clock: '<circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15.5 14"/>',
   users: '<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0113 0"/><path d="M17 5.5a3.5 3.5 0 010 6.5"/><path d="M18.5 20a6.4 6.4 0 00-2.5-5"/>',
   sliders: '<line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/><circle cx="9" cy="7" r="2.2"/><circle cx="15" cy="12" r="2.2"/><circle cx="8" cy="17" r="2.2"/>',
+  /* A cog, distinct from `sliders`. The two used to share one glyph, so the
+     app-wide settings screen and the per-run 評価軸/評価基準 controls were
+     drawn identically despite being different destinations. */
+  settings: '<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.6 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.6a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>',
   calendar: '<rect x="3" y="5" width="18" height="16" rx="2.5"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="8" y1="3" x2="8" y2="6"/><line x1="16" y1="3" x2="16" y2="6"/>',
 
   /* --- rail utilities --------------------------------------------------- */
@@ -177,7 +181,10 @@ const LOGO_PATH =
   'M13.13 10.46L21.27 14.94Q23.2 16 21.27 17.06L13.13 21.54' +
   'Q11.2 22.6 11.2 20.4L11.2 11.6Q11.2 9.4 13.13 10.46z';
 
-export function Logo({ size = 32, color = '#F4581F' }: { size?: number; color?: string }) {
+/* Defaults to the live accent token rather than a literal, so the brand mark
+   follows the system colour the client picks. A hardcoded orange here left the
+   logo stranded while every other accent surface re-tinted. */
+export function Logo({ size = 32, color = 'var(--color-accent)' }: { size?: number; color?: string }) {
   return (
     <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 32 32" aria-hidden="true">
       <path fill={color} fillRule="evenodd" d={LOGO_PATH} />

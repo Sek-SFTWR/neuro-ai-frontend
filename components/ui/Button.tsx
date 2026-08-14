@@ -8,7 +8,7 @@ const VARIANT: Record<Variant, string> = {
     'bg-surface border border-line text-text hover:bg-surface-hover hover:border-line-hover',
   black: 'bg-black-ms text-white font-semibold hover:bg-black-hover',
   ai: 'bg-[linear-gradient(180deg,#F76A32_0%,#F4581F_100%)] text-white font-semibold hover:bg-accent-hover',
-  accent: 'bg-accent text-white font-semibold hover:bg-accent-hover',
+  accent: 'bg-accent text-accent-fg font-semibold hover:bg-accent-hover',
   danger: 'bg-surface border border-line text-pri-high hover:bg-pri-high-bg',
 };
 

@@ -3,7 +3,7 @@ import { Hl } from './Hl';
 import { STATUS } from '@/lib/palette';
 import type { StatusKey } from '@/lib/types';
 
-/** Tinted status/priority tag: coloured text + icon on an 8% tint. */
+/** Tinted label: coloured text + icon on an 8% tint. */
 export function Tag({ label, fg, bg, icon }: { label: string; fg: string; bg: string; icon?: IconName }) {
   return (
     <span className="inline-flex items-center gap-[5px] rounded-full px-[9px] py-[3px] text-[11px] font-medium" style={{ background: bg, color: fg }}>

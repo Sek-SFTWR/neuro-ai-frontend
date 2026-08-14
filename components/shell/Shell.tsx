@@ -4,10 +4,12 @@ import { useEffect } from 'react';
 import { TopBar } from './TopBar';
 import { Rail } from './Rail';
 import { useStore } from '@/lib/store';
+import { accentOf } from '@/lib/palette';
 import { useKeyChanged } from '@/lib/useKeyChanged';
 import { EvaluateView } from '@/components/views/EvaluateView';
 import { HistoryView } from '@/components/views/HistoryView';
 import { PersonasView } from '@/components/views/PersonasView';
+import { ResultScreen } from '@/components/views/ResultScreen';
 import { SettingsView } from '@/components/views/SettingsView';
 
 export function Shell() {
@@ -31,9 +33,24 @@ export function Shell() {
     document.documentElement.dataset.theme = state.theme;
   }, [state.theme]);
 
+  /* The accent is the one token the client gets to choose, so it is written as
+     an inline custom property on :root — that beats both the @theme default
+     and the dark-theme block, and every `bg-accent` / `text-accent` in the app
+     re-tints from it without a single component knowing the colour. */
+  useEffect(() => {
+    const a = accentOf(state.accent);
+    const root = document.documentElement;
+    root.style.setProperty('--color-accent', a.color);
+    root.style.setProperty('--color-accent-hover', a.hover);
+    root.style.setProperty('--color-accent-fg', a.fg);
+  }, [state.accent]);
+
   let view: React.ReactNode;
   switch (state.section) {
     case 'evaluate': view = <EvaluateView />; break;
+    /* Falling back to the evaluate screen keeps the app coherent if the result
+       is cleared while its section is still selected. */
+    case 'result': view = (state.result || state.compare) ? <ResultScreen /> : <EvaluateView />; break;
     case 'history': view = <HistoryView />; break;
     case 'personas': view = <PersonasView />; break;
     case 'settings': view = <SettingsView />; break;
@@ -43,8 +60,11 @@ export function Shell() {
   return (
     <div className="min-h-screen flex flex-col px-(--page-x)">
       <TopBar />
+      {/* Settings hides the rail: it is reached from the header rather than
+          being one of the rail's destinations, it carries its own way back,
+          and leaving the rail up would light nothing while you are on it. */}
       <div className="flex-1 flex flex-col b860:flex-row items-stretch b860:items-start gap-0 b860:gap-(--rail-gap) pt-2 b860:pt-(--header-gap) min-h-0">
-        <Rail />
+        {state.section !== 'settings' && <Rail />}
         <main className={`flex-1 min-w-0 pt-2 b860:pt-0 pb-10 flex flex-col gap-6 ${viewChanged ? 'view-enter' : ''}`}>
           {view}
         </main>

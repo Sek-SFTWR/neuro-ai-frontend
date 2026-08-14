@@ -118,7 +118,7 @@ export function AxesEditor() {
 
       <div className="flex gap-2 items-center">
         <Input ref={inputRef} type="text" placeholder="評価軸を追加（例：清涼感の伝達）" aria-label="評価軸を追加" onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); add(e.currentTarget.value); } }} />
-        <Button variant="black" onClick={() => add(inputRef.current?.value || '')}>追加</Button>
+        <Button variant="accent" onClick={() => add(inputRef.current?.value || '')}>追加</Button>
       </div>
 
       <div className="border-t border-line pt-4 flex flex-col gap-2.5">

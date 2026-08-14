@@ -69,7 +69,7 @@ export function AttrDropdown({ anchor, onClose, onAdd }: AttrDropdownProps) {
       </div>
       <div className="flex gap-2 py-2.5 px-3 border-t border-line">
         <Button
-          variant="black"
+          variant="accent"
           size="sm"
           onClick={() => {
             const picked = Object.keys(checked).filter((k) => checked[k]);

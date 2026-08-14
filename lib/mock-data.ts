@@ -74,6 +74,11 @@ const DETAILS = [
   '職場でまとめ買いをすることが多く、味の安定性と入手しやすさを重視する。新規ブランドへの切り替えには慎重。',
 ];
 
+/* The login is shared, so "who made this" is authored metadata rather than
+   anything the app can verify. A short roster keeps the cards showing a
+   believable mix of colleagues instead of one name everywhere. */
+export const CREATORS = ['佐藤 美咲', '田中 健', '鈴木 由紀', '高橋 亮', '渡辺 千夏'];
+
 function buildPersonas(): Persona[] {
   const out: Persona[] = [];
   let n = 0;
@@ -88,6 +93,7 @@ function buildPersonas(): Persona[] {
         detail: pick(r, DETAILS),
         color: PERSONA_COLORS[(li * 3 + i) % PERSONA_COLORS.length],
         photoUrl: '',
+        createdBy: pick(r, CREATORS),
       });
     });
   });
@@ -106,72 +112,133 @@ const AXES = ['ブランド好意度', '購買意向', '推奨意向', '共感�
    ====================================================================== */
 
 const HISTORY: HistoryEntry[] = [
-  { id: 'h1', title: 'Alyaska (ice cream) Аляска займраг', mode: 'youtube',
-    status: 'running', priority: '高', savedAt: '2026-08-06 18:14', durationSec: 52,
-    personaCount: 5, axesDone: 4, due: '2026-08-08', files: 52, comments: 7 },
+  { id: 'h1', createdBy: CREATORS[1], title: 'Alyaska (ice cream) Аляска займраг', mode: 'youtube',
+    status: 'running', savedAt: '2026-08-06 18:14', durationSec: 52,
+    personaCount: 5, axesDone: 4, files: 52, comments: 7 },
 
-  { id: 'h2', title: '01_夏15_fullbit_事業会社宣伝部.mp4', mode: 'file',
-    status: 'todo', priority: '高', savedAt: '2026-07-31 15:36', durationSec: 15,
-    personaCount: 10, axesDone: 0, due: '2026-08-12', files: 15, comments: 0 },
+  { id: 'h2', createdBy: CREATORS[2], title: '01_夏15_fullbit_事業会社宣伝部.mp4', mode: 'file',
+    status: 'todo', savedAt: '2026-07-31 15:36', durationSec: 15,
+    personaCount: 10, axesDone: 0, files: 15, comments: 0 },
 
-  { id: 'h3', title: 'NeuroAI_movie_How to.mp4', mode: 'file',
-    status: 'todo', priority: '中', savedAt: '2026-07-23 13:46', durationSec: 68,
-    personaCount: 10, axesDone: 0, due: '2026-08-18', files: 68, comments: 0 },
+  { id: 'h3', createdBy: CREATORS[3], title: 'NeuroAI_movie_How to.mp4', mode: 'file',
+    status: 'todo', savedAt: '2026-07-23 13:46', durationSec: 68,
+    personaCount: 10, axesDone: 0, files: 68, comments: 0 },
 
-  { id: 'h4', title: 'NeuroAI_movie_capability.mp4', mode: 'file',
-    status: 'running', priority: '低', savedAt: '2026-07-23 13:46', durationSec: 30,
-    personaCount: 10, axesDone: 2, due: '2026-08-11', files: 30, comments: 4 },
+  { id: 'h4', createdBy: CREATORS[4], title: 'NeuroAI_movie_capability.mp4', mode: 'file',
+    status: 'running', savedAt: '2026-07-23 13:46', durationSec: 30,
+    personaCount: 10, axesDone: 2, files: 30, comments: 4 },
 
-  { id: 'h5', title: 'お〜いお茶 濃い茶「冴えわたれ、私」篇｜伊藤園', mode: 'youtube',
-    status: 'todo', priority: '低', savedAt: '2026-07-24 11:05', durationSec: 15,
-    personaCount: 10, axesDone: 0, due: '2026-08-14', files: 0, comments: 0 },
+  { id: 'h5', createdBy: CREATORS[0], title: 'お〜いお茶 濃い茶「冴えわたれ、私」篇｜伊藤園', mode: 'youtube',
+    status: 'todo', savedAt: '2026-07-24 11:05', durationSec: 15,
+    personaCount: 10, axesDone: 0, files: 0, comments: 0 },
 
-  { id: 'h6', title: '6本の比較：緑茶カテゴリ 夏キャンペーン', mode: 'ytcompare',
-    status: 'running', priority: '中', savedAt: '2026-07-07 20:33', durationSec: 15,
-    personaCount: 45, axesDone: 6, due: '2026-08-10', files: 6, comments: 21,
+  { id: 'h6', createdBy: CREATORS[1], title: '6本の比較：緑茶カテゴリ 夏キャンペーン', mode: 'ytcompare',
+    status: 'running', savedAt: '2026-07-07 20:33', durationSec: 15,
+    personaCount: 45, axesDone: 6, files: 6, comments: 21,
     videos: ['サントリー緑茶 伊右衛門『父とお茶した・夏』15秒篇',
              '【綾鷹】佐藤健 TVCM「お茶、しよっか。オフィス」篇 15秒',
              'キリン 生茶「きもちよさ、と生きていく 2人」篇 15秒'] },
 
-  { id: 'h7', title: 'お〜いお茶×大谷翔平「いつの日も、僕のそばには お茶がある。」篇 Ver. ON（15秒）',
-    mode: 'youtube', status: 'done', priority: '中', savedAt: '2026-07-30 11:15', durationSec: 15,
-    personaCount: 45, axesDone: 10, due: '2026-07-30', files: 15, comments: 45 },
+  { id: 'h7', createdBy: CREATORS[2], title: 'お〜いお茶×大谷翔平「いつの日も、僕のそばには お茶がある。」篇 Ver. ON（15秒）',
+    mode: 'youtube', status: 'done', savedAt: '2026-07-30 11:15', durationSec: 15,
+    personaCount: 45, axesDone: 10, files: 15, comments: 45 },
 
-  { id: 'h8', title: 'サントリー緑茶 伊右衛門『父とお茶した・夏』15秒篇 奈緒 光石研 サントリー',
-    mode: 'youtube', status: 'review', priority: '低', savedAt: '2026-07-19 20:03', durationSec: 15,
-    personaCount: 45, axesDone: 10, due: '2026-08-07', files: 15, comments: 45 },
+  { id: 'h8', createdBy: CREATORS[3], title: 'サントリー緑茶 伊右衛門『父とお茶した・夏』15秒篇 奈緒 光石研 サントリー',
+    mode: 'youtube', status: 'review', savedAt: '2026-07-19 20:03', durationSec: 15,
+    personaCount: 45, axesDone: 10, files: 15, comments: 45 },
 
-  { id: 'h9', title: '【綾鷹】おにぎり食堂 綾鷹屋 上白石 萌歌 TVCM「あや茶丸 鮭バターおにぎり」篇 15秒 AYATAKA TVCF',
-    mode: 'youtube', status: 'done', priority: '低', savedAt: '2026-07-07 20:33', durationSec: 15,
-    personaCount: 45, axesDone: 10, due: '2026-07-27', files: 15, comments: 33 },
+  { id: 'h9', createdBy: CREATORS[4], title: '【綾鷹】おにぎり食堂 綾鷹屋 上白石 萌歌 TVCM「あや茶丸 鮭バターおにぎり」篇 15秒 AYATAKA TVCF',
+    mode: 'youtube', status: 'done', savedAt: '2026-07-07 20:33', durationSec: 15,
+    personaCount: 45, axesDone: 10, files: 15, comments: 33 },
 
-  { id: 'h10', title: '【綾鷹】佐藤健 TVCM 「お茶、しよっか。オフィス」篇 15秒 AYATAKA TVCF',
-    mode: 'youtube', status: 'review', priority: '中', savedAt: '2026-07-07 20:33', durationSec: 15,
-    personaCount: 45, axesDone: 10, due: '2026-08-07', files: 15, comments: 38 },
+  { id: 'h10', createdBy: CREATORS[0], title: '【綾鷹】佐藤健 TVCM 「お茶、しよっか。オフィス」篇 15秒 AYATAKA TVCF',
+    mode: 'youtube', status: 'review', savedAt: '2026-07-07 20:33', durationSec: 15,
+    personaCount: 45, axesDone: 10, files: 15, comments: 38 },
 
-  { id: 'h11', title: 'お〜いお茶 「純国産茶葉100%」篇（日本国内版）', mode: 'youtube',
-    status: 'done', priority: '高', savedAt: '2026-07-07 20:33', durationSec: 15,
-    personaCount: 45, axesDone: 10, due: '2026-07-25', files: 15, comments: 41 },
+  { id: 'h11', createdBy: CREATORS[1], title: 'お〜いお茶 「純国産茶葉100%」篇（日本国内版）', mode: 'youtube',
+    status: 'done', savedAt: '2026-07-07 20:33', durationSec: 15,
+    personaCount: 45, axesDone: 10, files: 15, comments: 41 },
 
-  { id: 'h12', title: 'キリン 生茶「きもちよさ、と生きていく 2人」篇 15秒', mode: 'youtube',
-    status: 'running', priority: '中', savedAt: '2026-07-07 20:33', durationSec: 15,
-    personaCount: 45, axesDone: 3, due: '2026-08-09', files: 15, comments: 12 },
+  { id: 'h12', createdBy: CREATORS[2], title: 'キリン 生茶「きもちよさ、と生きていく 2人」篇 15秒', mode: 'youtube',
+    status: 'running', savedAt: '2026-07-07 20:33', durationSec: 15,
+    personaCount: 45, axesDone: 3, files: 15, comments: 12 },
 
-  { id: 'h13', title: '混合比較：夏キャンペーン3案', mode: 'mixcompare',
-    status: 'review', priority: '高', savedAt: '2026-07-07 20:34', durationSec: 15,
-    personaCount: 10, axesDone: 10, due: '2026-08-08', files: 9, comments: 27,
+  { id: 'h13', createdBy: CREATORS[3], title: '混合比較：夏キャンペーン3案', mode: 'mixcompare',
+    status: 'review', savedAt: '2026-07-07 20:34', durationSec: 15,
+    personaCount: 10, axesDone: 10, files: 9, comments: 27,
     videos: ['お〜いお茶 「純国産茶葉100%」篇（日本国内版）',
              '01_夏15_fullbit_事業会社宣伝部.mp4',
              'NeuroAI_movie_capability.mp4'] },
 
-  { id: 'h14', title: '動画ファイル比較：NeuroAI 2素材', mode: 'filecompare',
-    status: 'done', priority: '低', savedAt: '2026-07-05 09:12', durationSec: 30,
-    personaCount: 10, axesDone: 10, due: '2026-07-20', files: 8, comments: 19,
+  { id: 'h14', createdBy: CREATORS[4], title: '動画ファイル比較：NeuroAI 2素材', mode: 'filecompare',
+    status: 'done', savedAt: '2026-07-05 09:12', durationSec: 30,
+    personaCount: 10, axesDone: 10, files: 8, comments: 19,
     videos: ['NeuroAI_movie_How to.mp4', 'NeuroAI_movie_capability.mp4'] },
 
-  { id: 'h15', title: 'お〜いお茶 濃い茶「集中のスイッチ」篇 30秒', mode: 'youtube',
-    status: 'done', priority: '中', savedAt: '2026-06-28 14:40', durationSec: 30,
-    personaCount: 10, axesDone: 10, due: '2026-07-10', files: 30, comments: 22 },
+  { id: 'h15', createdBy: CREATORS[0], title: 'お〜いお茶 濃い茶「集中のスイッチ」篇 30秒', mode: 'youtube',
+    status: 'done', savedAt: '2026-06-28 14:40', durationSec: 30,
+    personaCount: 10, axesDone: 10, files: 30, comments: 22 },
+
+  /* --- Seeded so every evaluation type has a usable history, not just
+     YouTube. The evaluate screen lists past runs of the selected type, and a
+     mode with one entry made that list look broken rather than sparse. --- */
+
+  { id: 'h16', createdBy: CREATORS[1], title: '動画ファイル比較：夏15秒 A/B 2案', mode: 'filecompare',
+    status: 'review', savedAt: '2026-08-04 10:22', durationSec: 15,
+    personaCount: 45, axesDone: 10, files: 12, comments: 31,
+    videos: ['01_夏15_fullbit_事業会社宣伝部.mp4', '02_夏15_shortcut_事業会社宣伝部.mp4'] },
+
+  { id: 'h17', createdBy: CREATORS[3], title: '動画ファイル比較：ブランド訴求 3素材', mode: 'filecompare',
+    status: 'done', savedAt: '2026-07-28 16:47', durationSec: 30,
+    personaCount: 10, axesDone: 10, files: 18, comments: 24,
+    videos: ['NeuroAI_movie_How to.mp4', 'NeuroAI_movie_capability.mp4', '01_夏15_fullbit_事業会社宣伝部.mp4'] },
+
+  { id: 'h18', createdBy: CREATORS[0], title: '動画ファイル比較：ナレーション有無', mode: 'filecompare',
+    status: 'running', savedAt: '2026-07-15 11:38', durationSec: 15,
+    personaCount: 10, axesDone: 5, files: 10, comments: 8,
+    videos: ['02_夏15_shortcut_事業会社宣伝部.mp4', '03_夏15_narrationless.mp4'] },
+
+  { id: 'h19', createdBy: CREATORS[2], title: 'YouTube比較：緑茶3ブランド 好意度', mode: 'ytcompare',
+    status: 'done', savedAt: '2026-08-01 09:05', durationSec: 15,
+    personaCount: 45, axesDone: 10, files: 9, comments: 37,
+    videos: ['お〜いお茶 「純国産茶葉100%」篇（日本国内版）',
+             'サントリー緑茶 伊右衛門『父とお茶した・夏』15秒篇',
+             'キリン 生茶「きもちよさ、と生きていく 2人」篇 15秒'] },
+
+  { id: 'h20', createdBy: CREATORS[4], title: 'YouTube比較：タレント起用 2案', mode: 'ytcompare',
+    status: 'review', savedAt: '2026-07-21 14:19', durationSec: 15,
+    personaCount: 45, axesDone: 10, files: 6, comments: 29,
+    videos: ['お〜いお茶×大谷翔平「いつの日も、僕のそばには お茶がある。」篇 Ver. ON（15秒）',
+             '【綾鷹】佐藤健 TVCM 「お茶、しよっか。オフィス」篇 15秒 AYATAKA TVCF'] },
+
+  { id: 'h21', createdBy: CREATORS[1], title: 'YouTube比較：夏キャンペーン 4本一括', mode: 'ytcompare',
+    status: 'running', savedAt: '2026-07-11 17:52', durationSec: 15,
+    personaCount: 10, axesDone: 4, files: 12, comments: 14,
+    videos: ['お〜いお茶 濃い茶「冴えわたれ、私」篇｜伊藤園',
+             '【綾鷹】おにぎり食堂 綾鷹屋 上白石 萌歌 TVCM「あや茶丸 鮭バターおにぎり」篇 15秒 AYATAKA TVCF',
+             'キリン 生茶「きもちよさ、と生きていく 2人」篇 15秒',
+             'お〜いお茶 濃い茶「集中のスイッチ」篇 30秒'] },
+
+  { id: 'h22', createdBy: CREATORS[3], title: '混合比較：TVCM素材 vs 配信用URL', mode: 'mixcompare',
+    status: 'done', savedAt: '2026-07-26 13:04', durationSec: 15,
+    personaCount: 45, axesDone: 10, files: 11, comments: 35,
+    videos: ['サントリー緑茶 伊右衛門『父とお茶した・夏』15秒篇', '01_夏15_fullbit_事業会社宣伝部.mp4'] },
+
+  { id: 'h23', createdBy: CREATORS[0], title: '混合比較：既存クリエイティブ 4案', mode: 'mixcompare',
+    status: 'review', savedAt: '2026-07-09 08:41', durationSec: 30,
+    personaCount: 10, axesDone: 10, files: 14, comments: 18,
+    videos: ['お〜いお茶 濃い茶「集中のスイッチ」篇 30秒',
+             'NeuroAI_movie_How to.mp4',
+             '【綾鷹】佐藤健 TVCM 「お茶、しよっか。オフィス」篇 15秒 AYATAKA TVCF',
+             '03_夏15_narrationless.mp4'] },
+
+  { id: 'h24', createdBy: CREATORS[2], title: '02_夏15_shortcut_事業会社宣伝部.mp4', mode: 'file',
+    status: 'done', savedAt: '2026-08-02 15:27', durationSec: 15,
+    personaCount: 45, axesDone: 10, files: 15, comments: 26 },
+
+  { id: 'h25', createdBy: CREATORS[4], title: '03_夏15_narrationless.mp4', mode: 'file',
+    status: 'review', savedAt: '2026-07-18 12:09', durationSec: 15,
+    personaCount: 10, axesDone: 10, files: 15, comments: 11 },
 ];
 
 /* ======================================================================
@@ -449,12 +516,11 @@ export function simulate(
     title: Array.isArray(title) ? title.join(' / ') : title,
     mode,
     status: 'review',
-    priority: '中',
+    createdBy: CREATORS[0],
     savedAt: '',
     durationSec: durationSec || 15,
     personaCount: personaIds.length,
     axesDone: axesList.length,
-    due: '',
     files: 0,
     comments: 0,
     model: settings.model,

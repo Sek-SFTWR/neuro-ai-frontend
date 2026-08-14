@@ -1,8 +1,8 @@
 'use client';
 
 import type { ReactNode } from 'react';
-import { AnalysisOptions } from './AnalysisOptions';
 import { Inputs } from './Inputs';
+import { InstructionInput } from './InstructionInput';
 import { PersonaBar } from '@/components/ui/PersonaBar';
 import type { ModeKey } from '@/lib/types';
 
@@ -27,17 +27,23 @@ function Section({ title, children }: { title: string; children: ReactNode }) {
  * split bought a tall empty rectangle rather than a shorter modal. The picker's
  * height is better handled by the card's own max-height and one scroller.
  *
- * Nothing here declares a height, so a modal with a short roster is short.
+ * What is left is the two things a run needs and nothing else: what to
+ * evaluate, and who watches it. The 解析設定 block that used to sit between
+ * them held the model and the splice interval — both standing preferences
+ * rather than per-run choices, so they live on the settings screen now, and
+ * the criteria drill-in moved down to the footer beside the run button.
  */
-export function SettingsBody({ mode, onOpenCriteria }: { mode: ModeKey; onOpenCriteria: () => void }) {
+export function SettingsBody({ mode }: { mode: ModeKey }) {
   return (
     <>
       <Section title="動画">
         <Inputs mode={mode} />
       </Section>
 
-      <Section title="解析設定">
-        <AnalysisOptions onOpenCriteria={onOpenCriteria} />
+      {/* After the video, before the personas: it describes how to watch what
+          was just specified, and reads as a note to the people about to do it. */}
+      <Section title="追加指示（任意）">
+        <InstructionInput />
       </Section>
 
       <div className="border-t border-line pt-3">
