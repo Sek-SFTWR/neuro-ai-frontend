@@ -125,14 +125,15 @@ export function SettingsView() {
           of a long settings page. The bar spans the column and carries the page
           background, so content scrolls under it rather than through it. */}
       <div className="sticky top-(--topbar-h) z-[250] bg-page pt-2 pb-1">
-        <button
-          type="button"
-          onClick={() => goSection(state.settingsFrom)}
-          className="inline-flex items-center gap-1 -ml-1.5 px-1.5 py-1 rounded-sm text-xs font-medium text-text-sub transition-colors duration-180 hover:text-text hover:bg-fill"
-        >
+        {/* The same bg-surface/border-line "outline" pill every other secondary
+            action on this screen uses (e.g. 評価軸を設定 below) — a bare-text
+            link had nothing to read as a button against the page background,
+            in light mode especially. Sitting inside a sticky bg-page bar, it
+            still needs its own visible edge to read as a control. */}
+        <Button variant="outline" size="sm" onClick={() => goSection(state.settingsFrom)}>
           <Icon name="chevronLeft" size={14} />
           {t('settings.back')}
-        </button>
+        </Button>
       </div>
 
       <PageHeader title={t('settings.title')} sub={t('settings.sub')} />

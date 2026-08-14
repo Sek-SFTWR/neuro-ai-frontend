@@ -36,13 +36,15 @@ export function Shell() {
   /* The accent is the one token the client gets to choose, so it is written as
      an inline custom property on :root — that beats both the @theme default
      and the dark-theme block, and every `bg-accent` / `text-accent` in the app
-     re-tints from it without a single component knowing the colour. */
+     re-tints from it without a single component knowing the colour.
+     --color-accent-fg is deliberately left alone here: its default (white, in
+     globals.css) applies to every accent uniformly, by design — see the note
+     on ACCENTS in lib/palette.ts for why this isn't computed per-colour. */
   useEffect(() => {
     const a = accentOf(state.accent);
     const root = document.documentElement;
     root.style.setProperty('--color-accent', a.color);
     root.style.setProperty('--color-accent-hover', a.hover);
-    root.style.setProperty('--color-accent-fg', a.fg);
   }, [state.accent]);
 
   let view: React.ReactNode;

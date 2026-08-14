@@ -22,7 +22,9 @@
 const enc = new TextEncoder();
 
 export const SESSION_COOKIE = 'ms_session';
-export const SESSION_TTL_SECONDS = 60 * 60 * 12;
+// 3 months. Rotating AUTH_SECRET/APP_EMAIL/APP_PASSWORD is still the only way
+// to force everyone to log in again sooner than this.
+export const SESSION_TTL_SECONDS = 60 * 60 * 24 * 90;
 
 /* --- base64url ------------------------------------------------------------ */
 
