@@ -4,11 +4,6 @@ import type { ReactNode } from 'react';
 import { Icon, Logo } from '@/components/Icon';
 import { useT } from '@/lib/i18n';
 
-/**
- * The chrome every auth screen shares: brand above, one card, the mock-UI
- * footnote below the divider. Only the card's contents differ between login,
- * register and password reset, so only that is passed in.
- */
 export function AuthShell({ title, lead, children }: { title: string; lead: string; children: ReactNode }) {
   const t = useT();
   return (
