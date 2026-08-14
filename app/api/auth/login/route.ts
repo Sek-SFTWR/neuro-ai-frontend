@@ -4,7 +4,7 @@ import {
   SESSION_TTL_SECONDS,
   createSessionToken,
   isAuthConfigured,
-  verifyPassword,
+  verifyCredentials,
 } from '@/lib/auth';
 
 /**
@@ -51,18 +51,21 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'rate_limited' }, { status: 429 });
   }
 
+  let email = '';
   let password = '';
   try {
-    const body = (await req.json()) as { password?: unknown };
+    const body = (await req.json()) as { email?: unknown; password?: unknown };
+    if (typeof body.email === 'string') email = body.email;
     if (typeof body.password === 'string') password = body.password;
   } catch {
     /* fall through to the generic failure below */
   }
 
-  if (!(await verifyPassword(password))) {
-    // One message for "empty", "wrong", and "malformed" alike — a login form
-    // has nothing to gain from telling the caller which it was.
-    return NextResponse.json({ error: 'invalid_password' }, { status: 401 });
+  if (!(await verifyCredentials(email, password))) {
+    // One message for "empty", "wrong email", "wrong password" and "malformed"
+    // alike — telling the caller which half was wrong turns the form into an
+    // oracle for guessing the other half.
+    return NextResponse.json({ error: 'invalid_credentials' }, { status: 401 });
   }
 
   resetAttempts(ip);

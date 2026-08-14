@@ -216,11 +216,11 @@ function PersonaModalBody({ persona, onSaved }: { persona: Persona | null; onSav
         </div>
         <div className="flex flex-col gap-3">
           <Field label="氏名"><Input ref={nameRef} type="text" placeholder="例：田中 美咲" defaultValue={persona?.name || ''} /></Field>
-          <Field label="属性（年齢・職業など）"><Input ref={attrRef} type="text" placeholder="例：34歳・共働き主婦・首都圏在住" defaultValue={persona?.attribute || ''} /></Field>
+          <Field label="属性"><Input ref={attrRef} type="text" placeholder="例：34歳・共働き主婦・首都圏在住" defaultValue={persona?.attribute || ''} /></Field>
         </div>
       </div>
       <Field label="ペルソナ特徴（ひとことで）"><Input ref={traitRef} type="text" placeholder="例：日常にほっとする時間を求める母" defaultValue={persona?.trait || ''} /></Field>
-      <Field label="ペルソナ詳細（価値観・ライフスタイル・購買行動など）">
+      <Field label="ペルソナ詳細（年齢・職業・価値観・ライフスタイル・購買行動など）">
         <Textarea ref={detailRef} placeholder="生活背景や価値観、メディア接触、ブランドへの態度などを記述します。詳しいほど評価の精度が上がります。" defaultValue={persona?.detail || ''} />
       </Field>
       <div className="flex items-center justify-end gap-2 -mx-4 -mb-4 mt-2 p-4 border-t border-line">

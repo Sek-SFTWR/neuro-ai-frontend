@@ -1,15 +1,19 @@
 /*
- * Shared-password gate for the mock UI.
+ * Shared-credential gate for the mock UI.
  *
  * There is no user database and no backend — the whole app is a client-side
- * mock — so "logged in" means exactly one thing: the visitor typed the shared
- * password once. What we hand back is an HMAC-signed, HttpOnly cookie rather
- * than a "loggedIn=true" flag, so a visitor cannot mint their own session from
- * devtools, and so the password itself never sits in the browser.
+ * mock — so "logged in" means exactly one thing: the visitor typed the one
+ * shared email and password from APP_EMAIL / APP_PASSWORD. It is a single
+ * credential everyone shares, not per-person accounts: it cannot tell you WHO
+ * signed in, only that someone knew the pair.
  *
- * The signing key is derived from BOTH secrets: rotating either AUTH_SECRET or
- * APP_PASSWORD invalidates every session that is already out there, which is
- * the only revocation mechanism a passwordless-by-design gate can have.
+ * What we hand back is an HMAC-signed, HttpOnly cookie rather than a
+ * "loggedIn=true" flag, so a visitor cannot mint their own session from
+ * devtools, and so the credentials never sit in the browser.
+ *
+ * The signing key is derived from ALL THREE values: rotating AUTH_SECRET,
+ * APP_EMAIL or APP_PASSWORD invalidates every session already out there, which
+ * is the only revocation mechanism a gate with no user store can have.
  *
  * Everything here uses Web Crypto (not node:crypto) because middleware runs on
  * the edge runtime.
@@ -35,20 +39,28 @@ function b64urlDecodeToString(s: string): string {
 
 /* --- configuration -------------------------------------------------------- */
 
-type AuthConfig = { password: string; secret: string };
+type AuthConfig = { email: string; password: string; secret: string };
 
 function config(): AuthConfig | null {
+  const email = process.env.APP_EMAIL;
   const password = process.env.APP_PASSWORD;
   const secret = process.env.AUTH_SECRET;
-  if (!password || !secret) return null;
-  return { password, secret };
+  if (!email || !password || !secret) return null;
+  return { email, password, secret };
 }
 
-/** False when APP_PASSWORD / AUTH_SECRET are missing. The gate fails CLOSED on
-    this — a misconfigured deploy locks everyone out instead of quietly serving
-    the app to the open internet. */
+/** False when any of APP_EMAIL / APP_PASSWORD / AUTH_SECRET is missing. The
+    gate fails CLOSED on this — a misconfigured deploy locks everyone out
+    instead of quietly serving the app to the open internet. */
 export function isAuthConfigured(): boolean {
   return config() !== null;
+}
+
+/** Addresses are compared case- and whitespace-insensitively: nobody expects
+    `Sergelen@…` to be a different login from `sergelen@…`, and a trailing
+    space pasted from a chat message is not a wrong credential. */
+function normalizeEmail(value: string): string {
+  return value.trim().toLowerCase();
 }
 
 /* The cache is keyed by the material it was derived from, never just "have we
@@ -62,7 +74,7 @@ let cached: { material: string; key: Promise<CryptoKey> } | null = null;
 
 function hmacKey(cfg: AuthConfig): Promise<CryptoKey> {
   // NUL-separated so ("ab", "c") and ("a", "bc") can never derive the same key.
-  const material = `${cfg.secret}\u0000${cfg.password}`;
+  const material = `${cfg.secret}\u0000${cfg.email}\u0000${cfg.password}`;
   if (cached?.material !== material) {
     cached = {
       material,
@@ -95,16 +107,34 @@ async function sha256Hex(input: string): Promise<string> {
   return Array.from(new Uint8Array(digest), (b) => b.toString(16).padStart(2, '0')).join('');
 }
 
-/* --- password ------------------------------------------------------------- */
+/* --- credentials ---------------------------------------------------------- */
 
-/** Both sides are hashed first so the comparison runs over two 64-char strings
-    — the timing of a wrong guess no longer leaks how much of the password (or
-    how much of its length) was right. */
-export async function verifyPassword(candidate: string): Promise<boolean> {
+/**
+ * Checks the submitted pair against APP_EMAIL / APP_PASSWORD.
+ *
+ * Every value is hashed before comparison, so each check runs over two 64-char
+ * strings — the timing of a wrong guess no longer leaks how much of the secret
+ * (or how much of its length) was right.
+ *
+ * Both halves are always evaluated and only combined at the end. Writing this
+ * as `emailOk && passwordOk` inline would let JS short-circuit, and a wrong
+ * email would then return measurably faster than a wrong password — telling an
+ * attacker which half they had already guessed.
+ */
+export async function verifyCredentials(email: string, password: string): Promise<boolean> {
   const cfg = config();
   if (!cfg) return false;
-  const [a, b] = await Promise.all([sha256Hex(candidate), sha256Hex(cfg.password)]);
-  return safeEqual(a, b);
+
+  const [givenEmail, wantEmail, givenPassword, wantPassword] = await Promise.all([
+    sha256Hex(normalizeEmail(email)),
+    sha256Hex(normalizeEmail(cfg.email)),
+    sha256Hex(password),
+    sha256Hex(cfg.password),
+  ]);
+
+  const emailOk = safeEqual(givenEmail, wantEmail);
+  const passwordOk = safeEqual(givenPassword, wantPassword);
+  return emailOk && passwordOk;
 }
 
 /* --- session token -------------------------------------------------------- */
@@ -119,7 +149,7 @@ async function sign(payload: string, cfg: AuthConfig): Promise<string> {
     identity to carry. */
 export async function createSessionToken(now: number = Date.now()): Promise<string> {
   const cfg = config();
-  if (!cfg) throw new Error('APP_PASSWORD / AUTH_SECRET are not set');
+  if (!cfg) throw new Error('APP_EMAIL / APP_PASSWORD / AUTH_SECRET are not set');
   const payload = b64urlEncode(
     enc.encode(JSON.stringify({ exp: Math.floor(now / 1000) + SESSION_TTL_SECONDS })),
   );

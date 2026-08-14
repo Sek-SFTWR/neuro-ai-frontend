@@ -17,6 +17,13 @@ export const config = {
   matcher: ['/((?!_next/static|_next/image|favicon.ico|api/auth/).*)'],
 };
 
+/** The auth screens themselves, which have to be reachable without a session
+    — otherwise the gate would redirect the very pages that open it. Register
+    and password reset are mock flows (no account is created, no mail is sent),
+    so letting them through costs nothing: they expose no data and cannot
+    mint a session. Only /login can do that. */
+const PUBLIC_PATHS = new Set(['/login', '/register', '/forgot-password']);
+
 /** Only same-origin absolute paths may come back from `?next=`, so the login
     form can never be turned into an open redirect to another site. */
 function safeNext(raw: string | null): string {
@@ -29,8 +36,9 @@ export async function middleware(req: NextRequest) {
   const token = req.cookies.get(SESSION_COOKIE)?.value;
   const authed = await verifySessionToken(token);
 
-  if (pathname === '/login') {
+  if (PUBLIC_PATHS.has(pathname)) {
     if (!authed) return NextResponse.next();
+    // Already signed in: no reason to sit on a login or sign-up form.
     return NextResponse.redirect(new URL(safeNext(req.nextUrl.searchParams.get('next')), req.url));
   }
 
